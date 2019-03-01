@@ -63,18 +63,20 @@
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/aButton"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="10mm"
+        android:layout_height="10mm"
         android:layout_above="@id/currTime"
         android:layout_alignLeft="@id/stop"
         android:layout_alignParentLeft="true"
+        android:layout_marginRight="60px"
         android:text="A" />
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/bButton"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/aButton"
+        android:layout_width="10mm"
+        android:layout_height="10mm"
+        android:layout_above="@id/trackLength"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="60px"
         android:text="B" />
 
     <TextView
