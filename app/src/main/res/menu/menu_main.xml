@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.macyg.androidmediaplayer.MainActivity">
+    <item
+        android:id="@+id/open_file_action"
+        android:orderInCategory="1"
+        android:title="@string/open_file_action"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/second_item"
+        android:orderInCategory="100"
+        android:title="Close"
+        app:showAsAction="never"/>
+</menu>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Android Media Player</string>
+    <string name="trackLengthNumber"></string>
+    <string name="open_file_action">Open File</string>
+    <string name="select_audio_file_title" />
+    <string name="play_button">Play</string>
+    <string name="pause_button">Pause</string>
+    <string name="stop_button">Stop</string>
+    <string name="default_time">0:00</string>
+    <string name="album">Unknown Album</string>
+    <string name="artist">Unknown Artist</string>
+    <string name="genre">Unknown Genre</string>
+</resources>
