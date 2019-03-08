@@ -8,6 +8,7 @@
     <string name="stop_button">Stop</string>
     <string name="default_time">0:00</string>
     <string name="album">Unknown Album</string>
+    <string name="song">Title</string>
     <string name="artist">Unknown Artist</string>
     <string name="genre">Unknown Genre</string>
 </resources>

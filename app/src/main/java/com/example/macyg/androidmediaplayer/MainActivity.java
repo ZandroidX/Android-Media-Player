@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     Uri audioFileUri;
     int start, stop, aCount, bCount;
     SeekBar seekBar;
-    AudioFormat format;
     ImageView album_art;
     TextView album, artist, genre, trackLength, currTime;
     Handler handler = new Handler();
@@ -269,12 +267,20 @@ public class MainActivity extends AppCompatActivity {
             aCount = 0;
             bCount = 0;
         }
-        aCount += 1;
+        if (bCount == 1 && aCount == 0){
+            bCount = 0;
+            aCount +=1;
+        }
+        else {
+            aCount += 1;
+        }
 
     }
 
     public void bButton() {
         stop = mediaPlayer.getCurrentPosition();
+
+        /*bCount += 1;*/
 
         if (bCount > 1 && aCount >= 1) {
             bCount = 0;
@@ -284,15 +290,19 @@ public class MainActivity extends AppCompatActivity {
         if (aCount != 1) {
             Toast.makeText(this, "Please press A first", Toast.LENGTH_SHORT).show();
             bCount = 0;
+            aCount = 0;
         }
         if(bCount == 0 && aCount == 1){
             bCount += 1;
+        }
+        if(bCount == 1 && aCount == 0){
+            bCount = 0;
         }
 
         System.out.println("AB Button Count: " + bCount);
         /*mediaPlayer.seekTo(start);*/
         abLoopHandler.removeCallbacks(abLoop);
-        abLoopHandler.postDelayed(abLoop, 100);
+        abLoopHandler.postDelayed(abLoop, 1);
     }
 
     private Runnable abLoop = new Runnable() {
@@ -303,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                 if (currPos >= stop) {
                     mediaPlayer.seekTo(start);
                 }
-                abLoopHandler.postDelayed(this, 100);
+                abLoopHandler.postDelayed(this, 1);
             }
         }
     };
@@ -384,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void getInit() {
         album_art = (ImageView) findViewById(R.id.album_art);
-        album = (TextView) findViewById(R.id.Album);
+        album = (TextView) findViewById(R.id.Song);
         artist = (TextView) findViewById(R.id.artist_name);
         genre = (TextView) findViewById(R.id.genre);
     }
