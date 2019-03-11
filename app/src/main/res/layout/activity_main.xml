@@ -115,7 +115,17 @@
         android:textColor="@android:color/white" />
 
     <TextView
-        android:id="@+id/Song"
+        android:id="@+id/album_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/artist_name"
+        android:layout_alignParentRight="true"
+        android:fontFamily="@font/audiowide"
+        android:textColor="@android:color/white"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/songName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/album_art"
@@ -128,11 +138,11 @@
         android:id="@+id/artist_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/Song"
+        android:layout_below="@+id/songName"
         android:layout_alignParentRight="true"
         android:layout_marginTop="0dp"
         android:fontFamily="@font/audiowide"
         android:textColor="@android:color/white"
-        android:textSize="18dp" />
+        android:textSize="18sp" />
 
 </RelativeLayout>

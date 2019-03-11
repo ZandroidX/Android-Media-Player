@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -30,9 +32,10 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer = new MediaPlayer();
     Uri audioFileUri;
     int start, stop, aCount, bCount;
+    final int maxMediaTextLength = 14;
     SeekBar seekBar;
     ImageView album_art;
-    TextView album, artist, trackLength, currTime;
+    TextView album, artist, song, trackLength, currTime;
     Handler handler = new Handler();
     Handler songUpdateTimeHandler = new Handler();
     Handler abLoopHandler = new Handler();
@@ -100,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
         yourTextView.setTextColor(getResources().getColor(R.color.colorAccent));
         Typeface face = Typeface.create("@font/audiowide", Typeface.NORMAL);
         yourTextView.setTypeface(face);
-*/    }
+*/
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -275,11 +279,10 @@ public class MainActivity extends AppCompatActivity {
             aCount = 0;
             bCount = 0;
         }
-        if (bCount == 1 && aCount == 0){
+        if (bCount == 1 && aCount == 0) {
             bCount = 0;
-            aCount +=1;
-        }
-        else {
+            aCount += 1;
+        } else {
             aCount += 1;
         }
 
@@ -300,10 +303,10 @@ public class MainActivity extends AppCompatActivity {
             bCount = 0;
             aCount = 0;
         }
-        if(bCount == 0 && aCount == 1){
+        if (bCount == 0 && aCount == 1) {
             bCount += 1;
         }
-        if(bCount == 1 && aCount == 0){
+        if (bCount == 1 && aCount == 0) {
             bCount = 0;
         }
 
@@ -318,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             if (aCount == 1 && bCount == 1) {
                 int currPos = mediaPlayer.getCurrentPosition();
-                if (currPos >= stop) {
+                if (currPos >= stop || currPos <= start) {
                     mediaPlayer.seekTo(start);
                 }
                 abLoopHandler.postDelayed(this, 1);
@@ -384,10 +387,27 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             art = metaRetriever.getEmbeddedPicture();
-            Bitmap b = BitmapFactory.decodeByteArray(art, 0, art.length);
-            album_art.setImageBitmap(Bitmap.createScaledBitmap(b, 150, 150, false));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(art, 0, art.length);
+            album_art.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 150, 150, false));
             album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+            int albumLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).length();
+            if(albumLength > maxMediaTextLength) {
+                album.startAnimation((Animation) AnimationUtils.loadAnimation(this, R.anim.scrolltext));
+            }
+            artist.hasFocus();
+            artist.setSelected(true);
+            int artistLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).length();
+            Toast.makeText(this, Integer.toString(artistLength), Toast.LENGTH_SHORT).show();
             artist.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+            if(artistLength > maxMediaTextLength) {
+                artist.startAnimation((Animation) AnimationUtils.loadAnimation(this, R.anim.scrolltext));
+            }
+            song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+            int songLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).length();
+            if(songLength > maxMediaTextLength){
+                song.startAnimation((Animation) AnimationUtils.loadAnimation(this, R.anim.scrolltext));
+            }
+
         } catch (Exception e) {
             album_art.setBackgroundColor(Color.GRAY);
             album_art.setImageResource(R.drawable.headphones);
@@ -397,7 +417,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void getInit() {
         album_art = (ImageView) findViewById(R.id.album_art);
-        album = (TextView) findViewById(R.id.Song);
-        artist = (TextView) findViewById(R.id.artist_name);
+        album = (TextView) this.findViewById(R.id.album_name);
+        artist = (TextView) this.findViewById(R.id.artist_name);
+        song = (TextView) this.findViewById(R.id.songName);
     }
 }
