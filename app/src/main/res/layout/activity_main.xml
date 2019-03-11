@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,7 +12,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="#000000"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -22,7 +22,7 @@
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -69,6 +69,7 @@
         android:layout_alignStart="@id/stop"
         android:layout_alignParentStart="true"
         android:layout_marginRight="60px"
+        android:fontFamily="@font/audiowide"
         android:text="A" />
 
     <android.support.v7.widget.AppCompatButton
@@ -79,6 +80,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="false"
         android:layout_marginLeft="60px"
+        android:fontFamily="@font/audiowide"
         android:text="B" />
 
     <ImageView
@@ -89,16 +91,18 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginEnd="10dp"
+        android:visibility="invisible"
         android:background="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/currTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/default_time"
-        android:textColor="@android:color/white"
+        android:layout_above="@id/seekbar"
         android:layout_toStartOf="@id/stop"
-        android:layout_above="@id/seekbar"/>
+        android:fontFamily="@font/audiowide"
+        android:text="@string/default_time"
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/trackLength"
@@ -106,59 +110,17 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/seekbar"
         android:layout_toRightOf="@id/pause"
+        android:fontFamily="@font/audiowide"
         android:text="@string/default_time"
-        android:textColor="@android:color/white"
-        />
-
-    <TextView
-        android:id="@+id/song_name_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:text="Title:"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/artist_name_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/song_name_text"
-        android:layout_alignLeft="@+id/song_name_text"
-        android:text="Artist Name :"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/genre_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/artist_name_text"
-        android:layout_alignLeft="@+id/artist_name_text"
-        android:layout_gravity="right|center"
-        android:text="Genre: "
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/genre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/genre_text"
-        android:layout_alignBottom="@+id/genre_text"
-        android:layout_gravity="right"
-        android:layout_toRightOf="@+id/genre_text"
-        android:text="@string/genre"
-        android:textColor="@android:color/white"
-        android:textSize="18dp" />
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/Song"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/artist_name_text"
-        android:layout_toRightOf="@+id/song_name_text"
-        android:text="@string/album"
+        android:layout_below="@+id/album_art"
+        android:layout_alignParentRight="true"
+        android:fontFamily="@font/audiowide"
         android:textColor="@android:color/white"
         android:textSize="18dp" />
 
@@ -166,9 +128,10 @@
         android:id="@+id/artist_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/genre_text"
-        android:layout_toRightOf="@+id/artist_name_text"
-        android:text="@string/artist"
+        android:layout_below="@+id/Song"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="0dp"
+        android:fontFamily="@font/audiowide"
         android:textColor="@android:color/white"
         android:textSize="18dp" />
 

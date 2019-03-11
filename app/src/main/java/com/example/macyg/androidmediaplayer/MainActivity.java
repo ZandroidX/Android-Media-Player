@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     int start, stop, aCount, bCount;
     SeekBar seekBar;
     ImageView album_art;
-    TextView album, artist, genre, trackLength, currTime;
+    TextView album, artist, trackLength, currTime;
     Handler handler = new Handler();
     Handler songUpdateTimeHandler = new Handler();
     Handler abLoopHandler = new Handler();
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN); //show the activity in full screen
 
         seekBar = findViewById(R.id.seekbar);
         trackLength = findViewById(R.id.trackLength);
@@ -88,10 +92,15 @@ public class MainActivity extends AppCompatActivity {
         currTime.setVisibility(View.INVISIBLE);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-
         setSupportActionBar(toolbar);
-
-    }
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        /*int titleId = getResources().getIdentifier("action_bar_title", "id",
+                "android");
+        TextView yourTextView = (TextView) findViewById(titleId);
+        yourTextView.setTextColor(getResources().getColor(R.color.colorAccent));
+        Typeface face = Typeface.create("@font/audiowide", Typeface.NORMAL);
+        yourTextView.setTypeface(face);
+*/    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -117,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(Intent.createChooser(audiofile_chooser_intent,
                     getString(R.string.select_audio_file_title)), REQUEST_OPEN_FILE);
 
-            Toast.makeText(this, "File Chooser initiated..", Toast.LENGTH_SHORT).show();
             return true;
 
         } else if (id == R.id.second_item) {
@@ -319,7 +327,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private Runnable moveSeekBarThread = new Runnable() {
-
         public void run() {
             if (mediaPlayer.isPlaying()) {
 
@@ -377,25 +384,20 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             art = metaRetriever.getEmbeddedPicture();
-            /*Bitmap songImage = BitmapFactory.decodeByteArray(art, 0, art.length);*/
             Bitmap b = BitmapFactory.decodeByteArray(art, 0, art.length);
             album_art.setImageBitmap(Bitmap.createScaledBitmap(b, 150, 150, false));
             album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
             artist.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-            genre.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
         } catch (Exception e) {
             album_art.setBackgroundColor(Color.GRAY);
-            album_art.setImageResource(R.drawable.ic_launcher_background);
-            album.setText(R.string.album);
-            artist.setText(R.string.artist);
-            genre.setText(R.string.genre);
+            album_art.setImageResource(R.drawable.headphones);
         }
+        album_art.setVisibility(View.VISIBLE);
     }
 
     public void getInit() {
         album_art = (ImageView) findViewById(R.id.album_art);
         album = (TextView) findViewById(R.id.Song);
         artist = (TextView) findViewById(R.id.artist_name);
-        genre = (TextView) findViewById(R.id.genre);
     }
 }
