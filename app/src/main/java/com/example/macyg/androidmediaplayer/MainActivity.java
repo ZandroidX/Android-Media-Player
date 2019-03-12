@@ -1,29 +1,29 @@
 package com.example.macyg.androidmediaplayer;
 
-import android.content.Context;
+import android.view.animation.AnimationUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.media.AudioManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.widget.Button;
 import android.graphics.Color;
-import android.media.AudioManager;
+import android.content.Context;
+import android.os.Handler;
+import android.widget.ImageView;
+import android.util.Log;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
+import android.net.Uri;
+import android.view.View;
+import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer = new MediaPlayer();
     Uri audioFileUri;
     int start, stop, aCount, bCount;
-    final int maxMediaTextLength = 14;
+    final int maxMediaTextLength = 22;
     final String no_artist = "Unknown Artist";
     final String no_album = "Unknown Album";
     final String no_title = "Untitled";
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     Handler abLoopHandler = new Handler();
     MediaMetadataRetriever metaRetriever;
     byte art[];
+    public Button playButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +53,21 @@ public class MainActivity extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN); //show the activity in full screen
 
+
         seekBar = findViewById(R.id.seekbar);
         trackLength = findViewById(R.id.trackLength);
         currTime = findViewById(R.id.currTime);
 
-        final Button playButton = findViewById(R.id.play);
+        getInit();
+
+        playButton = findViewById(R.id.play);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 play();
             }
         });
+
         final Button pauseButton = findViewById(R.id.pause);
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,14 +104,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         /*int titleId = getResources().getIdentifier("action_bar_title", "id",
                 "android");
-        TextView yourTextView = (TextView) findViewById(titleId);
-        yourTextView.setTextColor(getResources().getColor(R.color.colorAccent));
+        TextView firstTextView = (TextView) findViewById(titleId);
+        firstTextView.setTextColor(getResources().getColor(R.color.colorAccent));
         Typeface face = Typeface.create("@font/audiowide", Typeface.NORMAL);
-        yourTextView.setTypeface(face);
-*/
+        firstTextView.setTypeface(face);*/
     }
+    /*playButton.getLocationOnScreen(playLocation);
+        System.out.println("Location X: "+playLocation[0]+" "+playLocation[1]);*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -378,8 +385,10 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void metaRetriever() {
-        getInit(); // Ablum_art reterival code
 
+        if(artist == null && album_art == null && song == null){
+            getInit();
+        }
         metaRetriever = new MediaMetadataRetriever();
         if (audioFileUri == null) {
             return;
@@ -393,31 +402,29 @@ public class MainActivity extends AppCompatActivity {
             album_art.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 150, 150, false));
 
             int albumLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).length();
-            if(albumLength > maxMediaTextLength) {
+            if (albumLength > maxMediaTextLength) {
                 album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
                 album.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scrolltext));
-            }
-            else{
+            } else {
                 album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
             }
 
             int artistLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).length();
             String artistString = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            if(artistLength > maxMediaTextLength) {
+
+            if (artistLength > maxMediaTextLength) {
                 artist.setText(artistString);
                 artist.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scrolltext));
-            }
-            else{
+            } else {
                 artist.setText(artistString);
             }
 
             int songLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).length();
 
-            if(songLength > maxMediaTextLength){
+            if (songLength > maxMediaTextLength) {
                 song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
                 song.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scrolltext));
-            }
-            else{
+            } else {
                 song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
             }
 

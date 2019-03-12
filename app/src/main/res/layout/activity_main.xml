@@ -30,56 +30,58 @@
         android:id="@+id/seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp"
-        />
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="20dp" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/play"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_gravity="center"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_above="@id/seekbar"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/playbutton" />
+        android:layout_gravity="center"
+        android:background="@android:drawable/ic_media_play" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/pause"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_above="@id/seekbar"
         android:layout_gravity="end"
         android:layout_toEndOf="@id/play"
-        android:background="@drawable/pausebutton"
-        android:layout_above="@id/seekbar" />
+        android:background="@android:drawable/ic_media_pause" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/stop"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_above="@id/seekbar"
         android:layout_toStartOf="@id/play"
         android:background="@drawable/stopbutton" />
+
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/aButton"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:layout_width="8mm"
-        android:layout_height="8mm"
-        android:layout_above="@id/currTime"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_above="@+id/seekbar"
         android:layout_alignStart="@id/stop"
         android:layout_alignParentStart="true"
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginRight="60px"
+        android:layout_marginBottom="5dp"
         android:fontFamily="@font/audiowide"
         android:text="A" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/bButton"
-        android:layout_width="8mm"
-        android:layout_height="8mm"
-        android:layout_above="@id/trackLength"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_above="@+id/seekbar"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="false"
         android:layout_marginLeft="60px"
+        android:layout_marginBottom="5dp"
         android:fontFamily="@font/audiowide"
         android:text="B" />
 
@@ -91,28 +93,35 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginEnd="10dp"
-        android:visibility="invisible"
-        android:background="@android:color/darker_gray" />
+        android:background="@android:color/darker_gray"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/currTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/seekbar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_toStartOf="@id/stop"
         android:fontFamily="@font/audiowide"
         android:text="@string/default_time"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/trackLength"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/seekbar"
-        android:layout_toRightOf="@id/pause"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
         android:fontFamily="@font/audiowide"
         android:text="@string/default_time"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/album_name"
@@ -121,6 +130,10 @@
         android:layout_below="@+id/artist_name"
         android:layout_alignParentRight="true"
         android:fontFamily="@font/audiowide"
+        android:shadowColor="@android:color/holo_blue_bright"
+        android:shadowDx="0.0"
+        android:shadowDy="0.0"
+        android:shadowRadius="18"
         android:singleLine="true"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
@@ -132,6 +145,11 @@
         android:layout_below="@+id/album_art"
         android:layout_alignParentRight="true"
         android:fontFamily="@font/audiowide"
+        android:padding="5dp"
+        android:shadowColor="@android:color/holo_blue_bright"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="18"
         android:singleLine="true"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
@@ -144,9 +162,12 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="0dp"
         android:fontFamily="@font/audiowide"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
+        android:shadowColor="@android:color/holo_blue_bright"
+        android:shadowDx="0.0"
+        android:shadowDy="0.0"
+        android:shadowRadius="18"
         android:singleLine="true"
-        />
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
 
 </RelativeLayout>
