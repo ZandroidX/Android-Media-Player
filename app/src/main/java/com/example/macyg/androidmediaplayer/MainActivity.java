@@ -389,28 +389,39 @@ public class MainActivity extends AppCompatActivity {
             art = metaRetriever.getEmbeddedPicture();
             Bitmap bitmap = BitmapFactory.decodeByteArray(art, 0, art.length);
             album_art.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 150, 150, false));
-            album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
             int albumLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).length();
             if(albumLength > maxMediaTextLength) {
+                album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
                 album.startAnimation((Animation) AnimationUtils.loadAnimation(this, R.anim.scrolltext));
             }
-            artist.hasFocus();
-            artist.setSelected(true);
+            else{
+                album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+            }
             int artistLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).length();
-            Toast.makeText(this, Integer.toString(artistLength), Toast.LENGTH_SHORT).show();
-            artist.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+            String artistString = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             if(artistLength > maxMediaTextLength) {
+                artist.setText(artistString);
                 artist.startAnimation((Animation) AnimationUtils.loadAnimation(this, R.anim.scrolltext));
             }
-            song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+            else{
+                artist.setText(artistString);
+            }
             int songLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).length();
+            Toast.makeText(this, Integer.toString(songLength), Toast.LENGTH_LONG).show();
             if(songLength > maxMediaTextLength){
+                song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
                 song.startAnimation((Animation) AnimationUtils.loadAnimation(this, R.anim.scrolltext));
+            }
+            else{
+                song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
             }
 
         } catch (Exception e) {
             album_art.setBackgroundColor(Color.GRAY);
             album_art.setImageResource(R.drawable.headphones);
+            song.setText(R.string.no_title);
+            artist.setText(R.string.no_artist);
+            album.setText(R.string.no_album);
         }
         album_art.setVisibility(View.VISIBLE);
     }
