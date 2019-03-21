@@ -68,7 +68,7 @@
         android:layout_alignStart="@id/stop"
         android:layout_alignParentStart="true"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_marginRight="60px"
+        android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
         android:fontFamily="@font/audiowide"
         android:text="A" />
@@ -78,9 +78,8 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_above="@+id/seekbar"
-        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@id/aButton"
         android:layout_alignParentRight="false"
-        android:layout_marginLeft="60px"
         android:layout_marginBottom="5dp"
         android:fontFamily="@font/audiowide"
         android:text="B" />
@@ -92,7 +91,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="3dp"
         android:background="@android:color/darker_gray"
         android:visibility="invisible" />
 
@@ -130,12 +129,8 @@
         android:layout_below="@+id/artist_name"
         android:layout_alignParentRight="true"
         android:fontFamily="@font/audiowide"
-        android:shadowColor="@android:color/holo_blue_bright"
-        android:shadowDx="0.0"
-        android:shadowDy="0.0"
-        android:shadowRadius="18"
         android:singleLine="true"
-        android:textColor="@android:color/white"
+        android:textColor="#ffffff"
         android:textSize="18sp" />
 
     <TextView
@@ -145,13 +140,8 @@
         android:layout_below="@+id/album_art"
         android:layout_alignParentRight="true"
         android:fontFamily="@font/audiowide"
-        android:padding="5dp"
-        android:shadowColor="@android:color/holo_blue_bright"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="18"
         android:singleLine="true"
-        android:textColor="@android:color/white"
+        android:textColor="#ffffff"
         android:textSize="18sp" />
 
     <TextView
@@ -162,12 +152,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="0dp"
         android:fontFamily="@font/audiowide"
-        android:shadowColor="@android:color/holo_blue_bright"
-        android:shadowDx="0.0"
-        android:shadowDy="0.0"
-        android:shadowRadius="18"
         android:singleLine="true"
-        android:textColor="@android:color/white"
+        android:textColor="#ffffff"
         android:textSize="18sp" />
 
 </RelativeLayout>

@@ -1,0 +1,4 @@
+android:shadowColor="@android:color/holo_blue_bright"
+        android:shadowDx="0.0"
+        android:shadowDy="0.0"
+        android:shadowRadius="18"

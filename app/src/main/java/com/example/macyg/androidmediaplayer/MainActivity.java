@@ -1,12 +1,12 @@
 package com.example.macyg.androidmediaplayer;
 
-import android.view.animation.AnimationUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.graphics.Color;
 import android.content.Context;
@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     Handler abLoopHandler = new Handler();
     MediaMetadataRetriever metaRetriever;
     byte art[];
-    public Button playButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +59,20 @@ public class MainActivity extends AppCompatActivity {
 
         getInit();
 
-        playButton = findViewById(R.id.play);
+        GlowingText gtSong = new GlowingText(MainActivity.this, getApplicationContext(),
+                findViewById(R.id.songName), 1, 20, 1, Color.WHITE, 1);
+        GlowingText gtArtist = new GlowingText(MainActivity.this, getApplicationContext(),
+                findViewById(R.id.artist_name), 1, 20, 1, Color.WHITE, 1);
+        GlowingText gtAlbum = new GlowingText(MainActivity.this, getApplicationContext(),
+                findViewById(R.id.album_name), 1, 20, 1, Color.WHITE, 1);
+
+        final Button playButton = findViewById(R.id.play);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 play();
             }
         });
-
         final Button pauseButton = findViewById(R.id.pause);
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
                 pause();
             }
         });
+
+
         final Button stopButton = findViewById(R.id.stop);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,14 +306,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void bButton() {
         stop = mediaPlayer.getCurrentPosition();
-
         /*bCount += 1;*/
-
         if (bCount > 1 && aCount >= 1) {
             bCount = 0;
             aCount = 0;
         }
-
         if (aCount != 1) {
             Toast.makeText(this, "Please press A first", Toast.LENGTH_SHORT).show();
             bCount = 0;
@@ -406,6 +410,7 @@ public class MainActivity extends AppCompatActivity {
                 album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
                 album.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scrolltext));
             } else {
+                album.clearAnimation();
                 album.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
             }
 
@@ -416,15 +421,16 @@ public class MainActivity extends AppCompatActivity {
                 artist.setText(artistString);
                 artist.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scrolltext));
             } else {
+                artist.clearAnimation();
                 artist.setText(artistString);
             }
 
             int songLength = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).length();
-
             if (songLength > maxMediaTextLength) {
                 song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
                 song.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scrolltext));
             } else {
+                song.clearAnimation();
                 song.setText(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
             }
 
@@ -432,8 +438,11 @@ public class MainActivity extends AppCompatActivity {
             album_art.setBackgroundColor(Color.GRAY);
             album_art.setImageResource(R.drawable.headphones);
 
+            song.clearAnimation();
             song.setText(no_title);
+            artist.clearAnimation();
             artist.setText(no_artist);
+            album.clearAnimation();
             album.setText(no_album);
         }
         album_art.setVisibility(View.VISIBLE);
