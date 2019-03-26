@@ -1,11 +1,22 @@
+/*
+TODO:
+Draw Glowing animations at button Locations
+Draw Circle glow using radians
+Draw Canvas around each button to draw a circe glow around each button.
+ */
+
 package com.example.macyg.androidmediaplayer;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.graphics.Color;
@@ -30,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     final int REQUEST_OPEN_FILE = 1;
     MediaPlayer mediaPlayer = new MediaPlayer();
     Uri audioFileUri;
-    int start, stop, aCount, bCount;
+    int start, stop, aCount, bCount, width, height;
+    float stopx, stopy, pausex, pausey, playx, playy;
     final int maxMediaTextLength = 22;
     final String no_artist = "Unknown Artist";
     final String no_album = "Unknown Album";
@@ -43,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
     Handler abLoopHandler = new Handler();
     MediaMetadataRetriever metaRetriever;
     byte art[];
+    Button playButton, stopButton, pauseButton, abutton, bButton;
+    Paint paint = new Paint();
+    Bitmap circBm;
+    Canvas canvas = new Canvas();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,14 +82,33 @@ public class MainActivity extends AppCompatActivity {
         GlowingText gtAlbum = new GlowingText(MainActivity.this, getApplicationContext(),
                 findViewById(R.id.album_name), 1, 20, 1, Color.WHITE, 1);
 
-        final Button playButton = findViewById(R.id.play);
+        playButton = findViewById(R.id.play);
+
+        playButton.post(new Runnable() {
+            @Override
+            public void run() {
+                playx = playButton.getX();
+                playy = playButton.getY();
+
+                System.out.println("play x = " + playx + " play y = " + playy);
+            }
+        });
+
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 play();
             }
         });
-        final Button pauseButton = findViewById(R.id.pause);
+        pauseButton = findViewById(R.id.pause);
+        pauseButton.post(new Runnable() {
+            @Override
+            public void run() {
+                pausex = pauseButton.getX();
+                pausey = pauseButton.getY();
+                System.out.println("pause x = " + pausex + " pause y = " + pausey);
+            }
+        });
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,22 +116,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        stopButton = findViewById(R.id.stop);
+        stopButton.post(new Runnable() {
+            @Override
+            public void run() {
+                stopx = stopButton.getX();
+                stopy = stopButton.getY();
+                System.out.println("stop x = " + stopx + " stop y = " + stopy);
 
-        final Button stopButton = findViewById(R.id.stop);
+            }
+        });
+
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 stop();
             }
         });
-        final Button abutton = findViewById(R.id.aButton);
+        abutton = findViewById(R.id.aButton);
         abutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 aButton();
             }
         });
-        final Button bButton = findViewById(R.id.bButton);
+        bButton = findViewById(R.id.bButton);
         bButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,16 +155,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        /*int titleId = getResources().getIdentifier("action_bar_title", "id",
-                "android");
-        TextView firstTextView = (TextView) findViewById(titleId);
-        firstTextView.setTextColor(getResources().getColor(R.color.colorAccent));
-        Typeface face = Typeface.create("@font/audiowide", Typeface.NORMAL);
-        firstTextView.setTypeface(face);*/
     }
-    /*playButton.getLocationOnScreen(playLocation);
-        System.out.println("Location X: "+playLocation[0]+" "+playLocation[1]);*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -180,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void startMediaPlayer() {
         try {
-
             if (mediaPlayer.isPlaying() || !mediaPlayer.isPlaying()) {
                 mediaPlayer.reset();
                 mediaPlayer.setDataSource(this, audioFileUri);
@@ -306,11 +340,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void bButton() {
         stop = mediaPlayer.getCurrentPosition();
+
         /*bCount += 1;*/
+
         if (bCount > 1 && aCount >= 1) {
             bCount = 0;
             aCount = 0;
         }
+
         if (aCount != 1) {
             Toast.makeText(this, "Please press A first", Toast.LENGTH_SHORT).show();
             bCount = 0;
@@ -390,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void metaRetriever() {
 
-        if(artist == null && album_art == null && song == null){
+        if (artist == null && album_art == null && song == null) {
             getInit();
         }
         metaRetriever = new MediaMetadataRetriever();
