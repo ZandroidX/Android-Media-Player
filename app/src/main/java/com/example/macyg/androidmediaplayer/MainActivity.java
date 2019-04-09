@@ -4,26 +4,21 @@ Draw Glowing animations at button Locations
 Draw Circle glow using radians
 Draw Canvas around each button to draw a circe glow around each button.
  */
-
 package com.example.macyg.androidmediaplayer;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Point;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.graphics.Color;
 import android.content.Context;
 import android.os.Handler;
 import android.widget.ImageView;
-import android.util.Log;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.view.Menu;
@@ -36,12 +31,12 @@ import android.net.Uri;
 import android.view.View;
 import android.view.WindowManager;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AudioManager.OnAudioFocusChangeListener {
 
     final int REQUEST_OPEN_FILE = 1;
     MediaPlayer mediaPlayer = new MediaPlayer();
     Uri audioFileUri;
-    int start, stop, aCount, bCount, width, height;
+    public int start, stop, aCount, bCount;
     float stopx, stopy, pausex, pausey, playx, playy;
     final int maxMediaTextLength = 22;
     final String no_artist = "Unknown Artist";
@@ -56,9 +51,8 @@ public class MainActivity extends AppCompatActivity {
     MediaMetadataRetriever metaRetriever;
     byte art[];
     Button playButton, stopButton, pauseButton, abutton, bButton;
-    Paint paint = new Paint();
     Bitmap circBm;
-    Canvas canvas = new Canvas();
+    AudioManager AM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         seekBar = findViewById(R.id.seekbar);
         trackLength = findViewById(R.id.trackLength);
         currTime = findViewById(R.id.currTime);
+
+        AM = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
 
         getInit();
 
@@ -89,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 playx = playButton.getX();
                 playy = playButton.getY();
-
                 System.out.println("play x = " + playx + " play y = " + playy);
+                circBm = Bitmap.createBitmap(playButton.getWidth(), playButton.getHeight(), Bitmap.Config.ARGB_8888);
             }
         });
 
@@ -200,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 audioFileUri = data.getData();
                 metaRetriever();
             }
-            AudioManager mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+            /*AudioManager mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
 
             if (mAudioManager.isMusicActive()) {
 
@@ -208,39 +204,47 @@ public class MainActivity extends AppCompatActivity {
 
                 i.putExtra("command", "pause");
                 MainActivity.this.sendBroadcast(i);
-            }
+            }*/
         }
         startMediaPlayer();
     }
 
     public void startMediaPlayer() {
         try {
-            if (mediaPlayer.isPlaying() || !mediaPlayer.isPlaying()) {
-                mediaPlayer.reset();
-                mediaPlayer.setDataSource(this, audioFileUri);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-                seekBar.setProgress(0);
-                seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
-                seekBar.setVisibility(View.VISIBLE);
-            } else {
-                mediaPlayer.setDataSource(this, audioFileUri);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-                seekBar.setProgress(0);
-                seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
-                seekBar.getVisibility();
-                seekBar.setVisibility(View.VISIBLE);
+            int requestAudioFocus = AM.requestAudioFocus(this, AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
+            if (requestAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                Intent i = new Intent("com.android.music.musicservicecommand");
+                i.putExtra("command", "pause");
+                MainActivity.this.sendBroadcast(i);
+                if (mediaPlayer.isPlaying() || !mediaPlayer.isPlaying()) {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(this, audioFileUri);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                    seekBar.setProgress(0);
+                    seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
+                    seekBar.setVisibility(View.VISIBLE);
+                } else {
+                    mediaPlayer.setDataSource(this, audioFileUri);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                    seekBar.setProgress(0);
+                    seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
+                    seekBar.getVisibility();
+                    seekBar.setVisibility(View.VISIBLE);
+                }
             }
-
-        } catch (Exception e) {
+        }/*else {
+                Toast.makeText(this, "UNABLE TO FOCUS", Toast.LENGTH_SHORT).show();
+            }*/ catch (Exception e) {
             e.printStackTrace();
         }
 
+
         int mediaPos = mediaPlayer.getCurrentPosition();
         int mediaMax = mediaPlayer.getDuration();
-        seekBar.setMax(mediaMax); // Set the Maximum range of the
-        seekBar.setProgress(mediaPos);// set current progress to song's
+        seekBar.setMax(mediaMax);
+        seekBar.setProgress(mediaPos);
         handler.removeCallbacks(moveSeekBarThread);
         handler.postDelayed(moveSeekBarThread, 300);
 
@@ -255,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
             trackLength.setVisibility(View.VISIBLE);
         } else {
             String maxTime = Integer.toString(minutes) + ":" + Integer.toString(seconds);
-            /*TextView trackLength = (TextView) findViewById(R.id.trackLength);*/
             trackLength.setText(maxTime);
             trackLength.setVisibility(View.VISIBLE);
         }
@@ -293,20 +296,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void play() {
-        if (!mediaPlayer.isPlaying() || mediaPlayer == null) {
-            mediaPlayer.start();
-            handler.removeCallbacks(moveSeekBarThread);
-            handler.postDelayed(moveSeekBarThread, 300);
-        } else {
-            Log.i("DEBUG_TAG", "No File loaded");
+        int result = AM.requestAudioFocus(this,
+                // Use the music stream.
+                AudioManager.STREAM_MUSIC,
+                // Request permanent focus.
+                AudioManager.AUDIOFOCUS_GAIN);
+
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            /*AM.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0);*/
+            Toast.makeText(this, "Focus Granted", Toast.LENGTH_SHORT).show();
+            if (!mediaPlayer.isPlaying() || mediaPlayer == null) {
+                mediaPlayer.start();
+                handler.removeCallbacks(moveSeekBarThread);
+                handler.postDelayed(moveSeekBarThread, 300);
+            }
         }
     }
 
     public void pause() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-        } else {
-            return;
+            /*AM.abandonAudioFocus(this);*/
         }
     }
 
@@ -490,5 +500,42 @@ public class MainActivity extends AppCompatActivity {
         album = (TextView) this.findViewById(R.id.album_name);
         artist = (TextView) this.findViewById(R.id.artist_name);
         song = (TextView) this.findViewById(R.id.songName);
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS:
+                System.out.println(focusChange);
+                /*Toast.makeText(this, "FOCUS LOST", Toast.LENGTH_LONG).show();*/
+                AM.abandonAudioFocus(this);
+                pause();
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                System.out.println(focusChange);
+                /*Toast.makeText(this, "FOCUS LOSS TRANSIENT", Toast.LENGTH_LONG).show();*/
+                pause();
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                System.out.println(focusChange);
+                /*Toast.makeText(this, "Focus Loss Transiet can Duck", Toast.LENGTH_SHORT).show();*/
+                AM.abandonAudioFocus(this);
+                pause();
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN:
+                System.out.println(focusChange);
+                /*Toast.makeText(this, "FOCUS GAIN", Toast.LENGTH_LONG).show();*/
+                play();
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+                int result = AM.requestAudioFocus(this, AudioManager.AUDIOFOCUS_GAIN, AudioManager.STREAM_MUSIC);
+                if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    play();
+                }
+                break;
+            case AudioManager.AUDIOFOCUS_NONE:
+                System.out.println(focusChange);
+                break;
+        }
     }
 }
