@@ -26,6 +26,14 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <ListView
+        android:id="@+id/ListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:dividerHeight="1dp"></ListView>
+
     <android.support.v7.widget.AppCompatSeekBar
         android:id="@+id/seekbar"
         android:layout_width="match_parent"
