@@ -40,7 +40,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +57,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     final String no_album = "Unknown Album";
     final String no_title = "Untitled";
     public Uri chosenPath;
-    public int songOrderCounter;
+    public String chosenPath1;
+    public int songOrderCounter, dirCounter, dirLastCounter;
+    ArrayList<Integer> iterationCounterLocations = new ArrayList<Integer>();
     SeekBar seekBar;
     Object musicNow[], downloadNow[], allMusicFiles[];
     ImageView album_art;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     Bitmap circBm;
     AudioManager AM;
     ArrayList<String> musicList = new ArrayList<String>();
+    ArrayList<String> newPath = new ArrayList<String>();
     ArrayList<String> downloadList = new ArrayList<String>();
     ContentResolver contentResolver;
     Context context = this;
@@ -297,18 +300,26 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             if (resultCode == RESULT_OK) {
                 audioFileUri = data.getData();
                 chosenPath = Uri.parse(audioFileUri.toString());
+                chosenPath1 = chosenPath.toString();
+                for (int i = 0; i < chosenPath1.length(); i++){
+                    char c = chosenPath1.charAt(i);
+                    //Process char
+                    if(c == '/'){
+                        dirCounter += 1;
+                        iterationCounterLocations.add(i);
+                    }
+                }
+                Object iterationArray[] = iterationCounterLocations.toArray();
+                int lastIndexPath = iterationArray.length;
+                int lastIndexSlash = (int) iterationArray[lastIndexPath - 1];
+                System.out.println("# slashes:" + lastIndexPath + "Slash index: " + iterationArray[lastIndexPath - 1].toString());
+                String chosenPath2 = chosenPath1.substring(0, lastIndexSlash);
+                chosenPath2 = chosenPath2 + "/";
+                System.out.println("NEW_PATH " + chosenPath2);
                 metaRetriever();
             }
-            /*AudioManager mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-
-            if (mAudioManager.isMusicActive()) {
-
-                Intent i = new Intent("com.android.music.musicservicecommand");
-
-                i.putExtra("command", "pause");
-                MainActivity.this.sendBroadcast(i);
-            }*/
         }
+
         String pathDownload = Environment.getExternalStorageDirectory().toString() + "/Download/";
         String pathMusic = Environment.getExternalStorageDirectory().toString() + "/Music/";
         String dir = getFilesDir().getAbsolutePath();
@@ -320,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         Log.d("Files", "music Size: " + musicFiles.length);
         Log.d("Files", "download Size: " + downloadFiles.length);
 
-        for(int i = 0; i < musicFiles.length; i++){
+        for(int i = 0; i < downloadFiles.length; i++){
             Log.d("download files", "downloaFileName:" + downloadFiles[i].getName());
             downloadList.add(pathDownload + downloadFiles[i].getName());
         }
@@ -333,18 +344,24 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         allMusicFiles = musicList.toArray();
 
-        Log.d("ALL_MUSIC", musicList.toString());
+        if(musicList != null) {
+            for(int i = 0; i<allMusicFiles.length; i++){
+                Log.d("ALL_MUSIC", allMusicFiles[i].toString());
+            }
+        }
 
         musicNow = musicList.toArray();
-        for (int i = 0; i < musicNow.length; i++) {
-            Log.d("ARRAY", musicNow[i].toString());
-        }
-
+        if(musicNow != null) {
+            for (int i = 0; i < musicNow.length; i++) {
+                Log.d("Music Filer ARRAY", musicNow[i].toString());
+            }
+        }else{}
         downloadNow = downloadList.toArray();
-        for(int i = 0;i < downloadNow.length; i++){
-            Log.d("ARRAY_DOWNLOAD", downloadNow[i].toString());
-        }
-
+        if(downloadNow != null) {
+            for (int i = 0; i < downloadNow.length; i++) {
+                Log.d("ARRAY_DOWNLOAD", downloadNow[i].toString());
+            }
+        }else{}
 
         startMediaPlayer();
     }
