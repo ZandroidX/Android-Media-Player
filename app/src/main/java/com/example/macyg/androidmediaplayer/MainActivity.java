@@ -7,12 +7,8 @@ Draw Canvas around each button to draw a circe glow around each button.
 package com.example.macyg.androidmediaplayer;
 
 import android.Manifest;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,7 +36,6 @@ import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,10 +70,6 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     ArrayList<String> musicList = new ArrayList<String>();
     ArrayList<String> newPath = new ArrayList<String>();
     ArrayList<String> downloadList = new ArrayList<String>();
-    ContentResolver contentResolver;
-    Context context = this;
-    Uri mediaUri;
-    Cursor cursor;
     List<String> ListElementsArrayList;
     String[] ListElements = new String[]{};
 
@@ -189,8 +180,10 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false)
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
     }
+
 
     public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -251,10 +244,10 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 audioFileUri = data.getData();
                 chosenPath = Uri.parse(audioFileUri.toString());
                 chosenPath1 = chosenPath.toString();
-                for (int i = 0; i < chosenPath1.length(); i++){
+                for (int i = 0; i < chosenPath1.length(); i++) {
                     char c = chosenPath1.charAt(i);
                     //Process char
-                    if(c == '/'){
+                    if (c == '/') {
                         dirCounter += 1;
                         iterationCounterLocations.add(i);
                     }
@@ -281,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         Log.d("Files", "music Size: " + musicFiles.length);
         Log.d("Files", "download Size: " + downloadFiles.length);
 
-        for(int i = 0; i < downloadFiles.length; i++){
+        for (int i = 0; i < downloadFiles.length; i++) {
             Log.d("download files", "downloaFileName:" + downloadFiles[i].getName());
             downloadList.add(pathDownload + downloadFiles[i].getName());
         }
@@ -294,24 +287,26 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         allMusicFiles = musicList.toArray();
 
-        if(musicList != null) {
-            for(int i = 0; i<allMusicFiles.length; i++){
+        if (musicList != null) {
+            for (int i = 0; i < allMusicFiles.length; i++) {
                 Log.d("ALL_MUSIC", allMusicFiles[i].toString());
             }
         }
 
         musicNow = musicList.toArray();
-        if(musicNow != null) {
+        if (musicNow != null) {
             for (int i = 0; i < musicNow.length; i++) {
                 Log.d("Music Filer ARRAY", musicNow[i].toString());
             }
-        }else{}
+        } else {
+        }
         downloadNow = downloadList.toArray();
-        if(downloadNow != null) {
+        if (downloadNow != null) {
             for (int i = 0; i < downloadNow.length; i++) {
                 Log.d("ARRAY_DOWNLOAD", downloadNow[i].toString());
             }
-        }else{}
+        } else {
+        }
 
         startMediaPlayer();
     }
@@ -319,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
     public void startMediaPlayer() {
         try {
+
             int requestAudioFocus = AM.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
             if (requestAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 Intent i = new Intent("com.android.music.musicservicecommand");
@@ -332,6 +328,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     seekBar.setProgress(0);
                     seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
                     seekBar.setVisibility(View.VISIBLE);
+                    songOrderCounter += 1;
                 } else {
                     mediaPlayer.setDataSource(this, audioFileUri);
                     mediaPlayer.prepare();
@@ -340,11 +337,14 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
                     seekBar.getVisibility();
                     seekBar.setVisibility(View.VISIBLE);
+                    songOrderCounter += 1;
                 }
             }
+            trackTime();
         }/*else {
                 Toast.makeText(this, "UNABLE TO FOCUS", Toast.LENGTH_SHORT).show();
-            }*/ catch (Exception e) {
+            }*/ catch (
+                Exception e) {
             e.printStackTrace();
         }
 
@@ -384,7 +384,33 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 }
             }
         });
-        
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    if(progress == mediaPlayer.getDuration()){
+
+                    }else {
+                        seekBar.setProgress(progress);
+                        mediaPlayer.seekTo(progress);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    public void trackTime() {
         int mediaPos = mediaPlayer.getCurrentPosition();
         final int mediaMax = mediaPlayer.getDuration();
         seekBar.setMax(mediaMax);
@@ -406,31 +432,10 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             trackLength.setText(maxTime);
             trackLength.setVisibility(View.VISIBLE);
         }
-
         songUpdateTimeHandler.removeCallbacks(updateSongTime);
         songUpdateTimeHandler.postDelayed(updateSongTime, 100);
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                        seekBar.setProgress(progress);
-                        mediaPlayer.seekTo(progress);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
     }
+
 
     public void quit() {
         mediaPlayer.stop();
@@ -536,38 +541,40 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
     private Runnable moveSeekBarThread = new Runnable() {
         public void run() {
-            if (mediaPlayer.isPlaying()) {
+            if(mediaPlayer.getCurrentPosition() != mediaPlayer.getDuration()){
                 int mediaPos_new = mediaPlayer.getCurrentPosition();
                 int mediaMax_new = mediaPlayer.getDuration();
                 seekBar.setMax(mediaMax_new);
                 seekBar.setProgress(mediaPos_new);
                 handler.postDelayed(this, 100); //Looping the thread after 0.3 second
                 // seconds
-            }
+            }else{}
         }
     };
 
     private Runnable updateSongTime = new Runnable() {
         public void run() {
-            if (mediaPlayer.isPlaying() || !mediaPlayer.isPlaying()) {
-                int mediaPos_new = mediaPlayer.getCurrentPosition();
-                int currentTime = mediaPos_new / 1000;
-                double currentTime1 = Math.floor(currentTime / 60);
-                int minutes = (int) currentTime1;
-                int seconds = (currentTime % 60);
-                if (seconds < 10) {
-                    String currenTime2 = Integer.toString(minutes) + ":0" + Integer.toString(seconds);
-                    /*TextView currTime = (TextView) findViewById(R.id.currTime);*/
-                    currTime.setText(currenTime2);
-                    currTime.setVisibility(View.VISIBLE);
-                } else {
-                    String currenTime2 = Integer.toString(minutes) + ":" + Integer.toString(seconds);
-                    /*TextView currTime = (TextView) findViewById(R.id.currTime);*/
-                    currTime.setText(currenTime2);
-                    currTime.setVisibility(View.VISIBLE);
+            if (mediaPlayer.isPlaying()) {
+                if (mediaPlayer.isPlaying() || !mediaPlayer.isPlaying()) {
+                    int mediaPos_new = mediaPlayer.getCurrentPosition();
+                    int currentTime = mediaPos_new / 1000;
+                    double currentTime1 = Math.floor(currentTime / 60);
+                    int minutes = (int) currentTime1;
+                    int seconds = (currentTime % 60);
+                    if (seconds < 10) {
+                        String currenTime2 = Integer.toString(minutes) + ":0" + Integer.toString(seconds);
+                        /*TextView currTime = (TextView) findViewById(R.id.currTime);*/
+                        currTime.setText(currenTime2);
+                        currTime.setVisibility(View.VISIBLE);
+                    } else {
+                        String currenTime2 = Integer.toString(minutes) + ":" + Integer.toString(seconds);
+                        /*TextView currTime = (TextView) findViewById(R.id.currTime);*/
+                        currTime.setText(currenTime2);
+                        currTime.setVisibility(View.VISIBLE);
+                    }
                 }
-            }
-            songUpdateTimeHandler.postDelayed(this, 100);
+                songUpdateTimeHandler.postDelayed(this, 100);
+            }/*else if(mediaPlayer.getCurrentPosition() == mediaPlayer.getDuration()){}*/
         }
     };
 
@@ -580,7 +587,11 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         if (audioFileUri == null) {
             return;
         } else {
-            metaRetriever.setDataSource(this, audioFileUri);
+            if(songOrderCounter > 0){
+                metaRetriever.setDataSource(allMusicFiles[songOrderCounter].toString());
+            }else {
+                metaRetriever.setDataSource(this, audioFileUri);
+            }
         }
 
         try {
