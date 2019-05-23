@@ -457,8 +457,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             /*Toast.makeText(this, "Focus Granted", Toast.LENGTH_SHORT).show();*/
             if (!mediaPlayer.isPlaying() || mediaPlayer == null) {
                 mediaPlayer.start();
-                handler.removeCallbacks(moveSeekBarThread);
+                /*handler.removeCallbacks(moveSeekBarThread);*/
                 handler.postDelayed(moveSeekBarThread, 100);
+                songUpdateTimeHandler.postDelayed(updateSongTime, 100);
             }
         }
     }
