@@ -389,12 +389,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    if(progress == mediaPlayer.getDuration()){
-
-                    }else {
-                        seekBar.setProgress(progress);
-                        mediaPlayer.seekTo(progress);
-                    }
+                    seekBar.setProgress(progress);
+                    mediaPlayer.seekTo(progress);
                 }
             }
 
@@ -542,14 +538,15 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
     private Runnable moveSeekBarThread = new Runnable() {
         public void run() {
-            if(mediaPlayer.getCurrentPosition() != mediaPlayer.getDuration()){
+            if (mediaPlayer.getCurrentPosition() != mediaPlayer.getDuration()) {
                 int mediaPos_new = mediaPlayer.getCurrentPosition();
                 int mediaMax_new = mediaPlayer.getDuration();
                 seekBar.setMax(mediaMax_new);
                 seekBar.setProgress(mediaPos_new);
                 handler.postDelayed(this, 100); //Looping the thread after 0.3 second
                 // seconds
-            }else{}
+            } else {
+            }
         }
     };
 
@@ -588,9 +585,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         if (audioFileUri == null) {
             return;
         } else {
-            if(songOrderCounter > 0){
+            if (songOrderCounter > 0) {
                 metaRetriever.setDataSource(allMusicFiles[songOrderCounter].toString());
-            }else {
+            } else {
                 metaRetriever.setDataSource(this, audioFileUri);
             }
         }
