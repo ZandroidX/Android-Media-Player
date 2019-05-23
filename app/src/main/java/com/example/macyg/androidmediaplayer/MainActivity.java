@@ -189,57 +189,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        GetAllMediaMp3Files();
-    }
-
-    public void GetAllMediaMp3Files() {
-
-        contentResolver = context.getContentResolver();
-
-        mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-        cursor = contentResolver.query(
-                mediaUri, // Uri
-                null,
-                null,
-                null,
-                null
-        );
-
-        if (cursor == null) {
-
-            Toast.makeText(MainActivity.this, "Something Went Wrong.", Toast.LENGTH_LONG);
-
-        } else if (!cursor.moveToFirst()) {
-
-            Toast.makeText(MainActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG);
-
-        } else {
-
-            int Title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            //Getting Song ID From Cursor.
-            //int id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
-
-            do {
-
-                // You can also get the Song ID using cursor.getLong(id).
-                //long SongID = cursor.getLong(id);
-
-                String SongTitle = cursor.getString(Title);
-
-                // Adding Media File Names to ListElementsArrayList.
-                ListElementsArrayList.add(SongTitle);
-
-                Object ARRAY[];
-                ARRAY = ListElementsArrayList.toArray();
-                for (int i = 0; i < ARRAY.length; i++) {
-                    System.out.println("ELEMENTS ARRAY: " + ARRAY[i].toString());
-                }
-
-            } while (cursor.moveToNext());
-        }
+        getSupportActionBar().setDisplayShowTitleEnabled(false)
     }
 
     public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -399,36 +349,42 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         }
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer arg0) {
-                /*if (chosenPath == null) {*/
-                seekBar.setProgress(0);
-                mediaPlayer.seekTo(0);
-                /*} else {
+            public void onCompletion(MediaPlayer mp) {
+                if (allMusicFiles == null) {
+                    seekBar.setProgress(0);
+                    mediaPlayer.seekTo(0);
+                    handler.removeCallbacks(moveSeekBarThread);
+                    songUpdateTimeHandler.removeCallbacks(updateSongTime);
+                } else {
+                    handler.removeCallbacks(moveSeekBarThread);
+                    songUpdateTimeHandler.removeCallbacks(updateSongTime);
                     try {
-                        if(songOrderCounter == 0){
+                        if (songOrderCounter == 0) {
 
-                        }
-                        else {
+                        } else {
                             songOrderCounter += 1;
                         }
-                        handler.removeCallbacks(moveSeekBarThread);
-                        songUpdateTimeHandler.removeCallbacks(updateSongTime);
                         Log.d("PATH_WORKING", allMusicFiles[songOrderCounter].toString());
                         mediaPlayer.stop();
                         mediaPlayer.reset();
-                        mediaPlayer.release();
-                        mediaPlayer = null;
-                        Uri pathParse = Uri.parse(allMusicFiles[songOrderCounter].toString());
-                        mediaPlayer.setDataSource(getApplicationContext(), pathParse);
-                        *//*mediaPlayer.prepare();
-                        mediaPlayer.start();*//*
+                        mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mediaPlayer) {
+                                mediaPlayer.start();
+                                metaRetriever();
+                                trackTime();
+                            }
+                        });
+                        mediaPlayer.prepareAsync();
                     } catch (Exception e) {
                         System.out.println("NEXT_SONG_FAILED: " + e);
+                        e.printStackTrace();
                     }
-                }*/
+                }
             }
         });
-
+        
         int mediaPos = mediaPlayer.getCurrentPosition();
         final int mediaMax = mediaPlayer.getDuration();
         seekBar.setMax(mediaMax);
