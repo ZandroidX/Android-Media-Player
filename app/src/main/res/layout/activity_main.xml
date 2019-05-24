@@ -115,7 +115,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginBottom="5dp"
         android:layout_toStartOf="@id/stop"
-        android:fontFamily="@font/audiowide"
+        android:fontFamily="sans-serif"
         android:text="@string/default_time"
         android:textColor="@android:color/white"
         android:textSize="12sp" />
@@ -128,7 +128,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:fontFamily="@font/audiowide"
+        android:fontFamily="sans-serif"
         android:text="@string/default_time"
         android:textColor="@android:color/white"
         android:textSize="12sp" />
