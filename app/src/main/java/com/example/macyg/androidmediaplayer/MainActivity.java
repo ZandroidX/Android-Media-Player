@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     public Uri chosenPath;
     public String chosenPath1;
     public int songOrderCounter, dirCounter, dirLastCounter;
+    public boolean isUri;
     ArrayList<Integer> iterationCounterLocations = new ArrayList<Integer>();
     SeekBar seekBar;
     Object musicNow[], downloadNow[], allMusicFiles[];
@@ -221,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             audiofile_chooser_intent = new Intent();
             audiofile_chooser_intent.setAction(Intent.ACTION_GET_CONTENT);
             audiofile_chooser_intent.setType("audio/*");
+            isUri = true;
 
             startActivityForResult(Intent.createChooser(audiofile_chooser_intent,
                     getString(R.string.select_audio_file_title)), REQUEST_OPEN_FILE);
@@ -238,28 +240,32 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(data == null){return;}
+        else {
 
-        if (requestCode == REQUEST_OPEN_FILE) {
-            if (resultCode == RESULT_OK) {
-                audioFileUri = data.getData();
-                chosenPath = Uri.parse(audioFileUri.toString());
-                chosenPath1 = chosenPath.toString();
-                for (int i = 0; i < chosenPath1.length(); i++) {
-                    char c = chosenPath1.charAt(i);
-                    //Process char
-                    if (c == '/') {
-                        dirCounter += 1;
-                        iterationCounterLocations.add(i);
+            if (requestCode == REQUEST_OPEN_FILE) {
+                if (resultCode == RESULT_OK) {
+                    isUri = true;
+                    audioFileUri = data.getData();
+                    chosenPath = Uri.parse(audioFileUri.toString());
+                    chosenPath1 = chosenPath.toString();
+                    for (int i = 0; i < chosenPath1.length(); i++) {
+                        char c = chosenPath1.charAt(i);
+                        //Process char
+                        if (c == '/') {
+                            dirCounter += 1;
+                            iterationCounterLocations.add(i);
+                        }
                     }
+                    Object iterationArray[] = iterationCounterLocations.toArray();
+                    int lastIndexPath = iterationArray.length;
+                    int lastIndexSlash = (int) iterationArray[lastIndexPath - 1];
+                    System.out.println("# slashes:" + lastIndexPath + "Slash index: " + iterationArray[lastIndexPath - 1].toString());
+                    String chosenPath2 = chosenPath1.substring(0, lastIndexSlash);
+                    chosenPath2 = chosenPath2 + "/";
+                    System.out.println("NEW_PATH " + chosenPath2);
+                    metaRetriever();
                 }
-                Object iterationArray[] = iterationCounterLocations.toArray();
-                int lastIndexPath = iterationArray.length;
-                int lastIndexSlash = (int) iterationArray[lastIndexPath - 1];
-                System.out.println("# slashes:" + lastIndexPath + "Slash index: " + iterationArray[lastIndexPath - 1].toString());
-                String chosenPath2 = chosenPath1.substring(0, lastIndexSlash);
-                chosenPath2 = chosenPath2 + "/";
-                System.out.println("NEW_PATH " + chosenPath2);
-                metaRetriever();
             }
         }
 
@@ -329,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
                     seekBar.setVisibility(View.VISIBLE);
                     songOrderCounter += 1;
+
                 } else {
                     mediaPlayer.setDataSource(this, audioFileUri);
                     mediaPlayer.prepare();
@@ -358,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 } else {
                     handler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
+                    isUri = false;
                     try {
                         if (songOrderCounter == 0) {
 
@@ -470,8 +478,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     public void stop() {
         if (mediaPlayer != null || mediaPlayer.isPlaying() || mediaPlayer == null) {
             seekBar.setProgress(0);
-            mediaPlayer.pause();
             mediaPlayer.seekTo(0);
+            updateSongTime.run();
+            mediaPlayer.pause();
             start = 0;
             stop = 0;
             aCount = 0;
@@ -585,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         if (audioFileUri == null) {
             return;
         } else {
-            if (songOrderCounter > 0) {
+            if (isUri == false) {
                 metaRetriever.setDataSource(allMusicFiles[songOrderCounter].toString());
             } else {
                 metaRetriever.setDataSource(this, audioFileUri);
