@@ -240,13 +240,15 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(data == null){return;}
-        else {
-
+        if (data == null) {
+            return;
+        } else {
+            System.out.println(resultCode);
             if (requestCode == REQUEST_OPEN_FILE) {
                 if (resultCode == RESULT_OK) {
                     isUri = true;
                     audioFileUri = data.getData();
+                    System.out.println(audioFileUri);
                     chosenPath = Uri.parse(audioFileUri.toString());
                     chosenPath1 = chosenPath.toString();
                     for (int i = 0; i < chosenPath1.length(); i++) {
@@ -260,7 +262,10 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     Object iterationArray[] = iterationCounterLocations.toArray();
                     int lastIndexPath = iterationArray.length;
                     int lastIndexSlash = (int) iterationArray[lastIndexPath - 1];
-                    System.out.println("# slashes:" + lastIndexPath + "Slash index: " + iterationArray[lastIndexPath - 1].toString());
+
+                    System.out.println("# slashes:" + lastIndexPath + "Slash index: "
+                            + iterationArray[lastIndexPath - 1].toString());
+
                     String chosenPath2 = chosenPath1.substring(0, lastIndexSlash);
                     chosenPath2 = chosenPath2 + "/";
                     System.out.println("NEW_PATH " + chosenPath2);
@@ -277,11 +282,12 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         File musicDirectory = new File(pathMusic);
         File[] downloadFiles = downloadDirectory.listFiles();
         File[] musicFiles = musicDirectory.listFiles();
+
         Log.d("Files", "music Size: " + musicFiles.length);
         Log.d("Files", "download Size: " + downloadFiles.length);
 
         for (int i = 0; i < downloadFiles.length; i++) {
-            Log.d("download files", "downloaFileName:" + downloadFiles[i].getName());
+            Log.d("download files", "downloadFileName:" + downloadFiles[i].getName());
             downloadList.add(pathDownload + downloadFiles[i].getName());
         }
         for (int i = 0; i < musicFiles.length; i++) {
@@ -289,20 +295,26 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             musicList.add(pathMusic + musicFiles[i].getName());
         }
 
-        musicList.add(downloadList.toString());
-
-        allMusicFiles = musicList.toArray();
-
-        if (musicList != null) {
-            for (int i = 0; i < allMusicFiles.length; i++) {
-                Log.d("ALL_MUSIC", allMusicFiles[i].toString());
-            }
+        if(musicList.size() == 0 && downloadList.size() != 0){
+            allMusicFiles = downloadList.toArray();
         }
+        if(downloadList.size() == 0 && musicList.size() != 0){
+            allMusicFiles = musicList.toArray();
+        }
+
+        System.out.println("DOWNLOAD_LIST: " + downloadList);
+        System.out.println("MUSIC_LIST: " + musicList);
+
+        for(int i = 0; i < allMusicFiles.length; i++){
+            System.out.println("ALL_MUSIC: " + allMusicFiles[i]);
+        }
+
 
         musicNow = musicList.toArray();
         if (musicNow != null) {
             for (int i = 0; i < musicNow.length; i++) {
-                Log.d("Music Filer ARRAY", musicNow[i].toString());
+                Log.d("ARRAY_MUSIC", musicNow[i].toString());
+                System.out.println("Music Filer Length: " + musicNow.length);
             }
         } else {
         }
@@ -335,7 +347,6 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
                     seekBar.setVisibility(View.VISIBLE);
                     songOrderCounter += 1;
-
                 } else {
                     mediaPlayer.setDataSource(this, audioFileUri);
                     mediaPlayer.prepare();
@@ -359,23 +370,23 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             public void onCompletion(MediaPlayer mp) {
                 if (allMusicFiles == null) {
                     seekBar.setProgress(0);
-                    mediaPlayer.seekTo(0);
+                    currTime.setText(R.string.default_time);
                     handler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
                 } else {
                     handler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
                     isUri = false;
-                    try {
-                        if (songOrderCounter == 0) {
+                    if (songOrderCounter == 0) {
 
-                        } else {
-                            songOrderCounter += 1;
-                        }
+                    } else {
+                        songOrderCounter += 1;
+                    }
+                    try {
                         Log.d("PATH_WORKING", allMusicFiles[songOrderCounter].toString());
                         mediaPlayer.stop();
                         mediaPlayer.reset();
-                        mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
+                        mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString().replace("+", " "));
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mediaPlayer) {
@@ -386,8 +397,13 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                         });
                         mediaPlayer.prepareAsync();
                     } catch (Exception e) {
-                        System.out.println("NEXT_SONG_FAILED: " + e);
-                        e.printStackTrace();
+                        System.out.println("NEXT_SONG_FAILED: " + e.toString());
+                        if(e.toString().equals("java.io.IOException: setDataSource failed.")){
+                            Toast.makeText(MainActivity.this, "Invalid File Name", Toast.LENGTH_SHORT).show();
+                        }
+                        seekBar.setProgress(0);
+                        currTime.setText(R.string.default_time);
+
                     }
                 }
             }
@@ -591,13 +607,14 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             getInit();
         }
         metaRetriever = new MediaMetadataRetriever();
-        if (audioFileUri == null) {
-            return;
+
+        if (isUri == false) {
+            metaRetriever.setDataSource(allMusicFiles[songOrderCounter].toString());
         } else {
-            if (isUri == false) {
-                metaRetriever.setDataSource(allMusicFiles[songOrderCounter].toString());
-            } else {
+            try {
                 metaRetriever.setDataSource(this, audioFileUri);
+            }catch(Exception e){
+                e.printStackTrace();
             }
         }
 
