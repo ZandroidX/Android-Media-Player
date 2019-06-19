@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         String pathDownload = Environment.getExternalStorageDirectory().toString() + "/Download/";
         String pathMusic = Environment.getExternalStorageDirectory().toString() + "/Music/";
         String dir = getFilesDir().getAbsolutePath();
-        Log.d("Files", "Path: " + pathDownload);
+        Log.d("Files", "Download Path: " + pathDownload);
         File downloadDirectory = new File(pathDownload);
         File musicDirectory = new File(pathMusic);
         File[] downloadFiles = downloadDirectory.listFiles();
