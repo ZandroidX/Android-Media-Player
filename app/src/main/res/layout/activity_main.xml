@@ -81,7 +81,7 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:fontFamily="@font/audiowide"
+        android:fontFamily="sans-serif"
         android:text="A" />
 
     <android.support.v7.widget.AppCompatButton
@@ -92,7 +92,7 @@
         android:layout_toRightOf="@id/aButton"
         android:layout_alignParentRight="false"
         android:layout_marginBottom="5dp"
-        android:fontFamily="@font/audiowide"
+        android:fontFamily="sans-serif"
         android:text="B" />
 
     <ImageView
@@ -139,7 +139,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/artist_name"
         android:layout_alignParentRight="true"
-        android:fontFamily="@font/sans-serif"
+        android:fontFamily="sans-serif"
         android:singleLine="true"
         android:textColor="#ffffff"
         android:textSize="18sp" />
@@ -150,7 +150,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/album_art"
         android:layout_alignParentRight="true"
-        android:fontFamily="@font/sans-serif"
+        android:fontFamily="sans-serif"
         android:singleLine="true"
         android:textColor="#ffffff"
         android:textSize="18sp" />
@@ -162,7 +162,7 @@
         android:layout_below="@+id/songName"
         android:layout_alignParentRight="true"
         android:layout_marginTop="0dp"
-        android:fontFamily="@font/sans-serif"
+        android:fontFamily="sans-serif"
         android:singleLine="true"
         android:textColor="#ffffff"
         android:textSize="18sp" />
