@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     ArrayList<String> downloadList = new ArrayList<String>();
     List<String> ListElementsArrayList;
     String[] ListElements = new String[]{};
+    ArrayList<String> sdDownloadList = new ArrayList<String>();
+    ArrayList<String> sdMusicList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,9 +251,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 if (resultCode == RESULT_OK) {
                     isUri = true;
                     audioFileUri = data.getData();
-                    System.out.println(audioFileUri);
+                    System.out.println("URI " + audioFileUri);
 
-                    String filePath=PathUtil.getPath(this, audioFileUri);
+                    String filePath = PathUtil.getPath(this, audioFileUri);
 
                     System.out.println("ACCENTUATED URI " + filePath);
 
@@ -289,14 +291,6 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         File[] downloadFiles = downloadDirectory.listFiles();
         File[] musicFiles = musicDirectory.listFiles();
 
-        System.out.println("EXTERNAL_SD " + removableStoragePath);
-        String pathSdDownload = removableStoragePath + "/Download/";
-        String pathSdMusic = removableStoragePath + "/Music/";
-        File sdDownloadDirectory = new File(pathSdDownload);
-        File sdMusicDirectory = new File(pathSdMusic);
-        File[] sdDownloadFiles = sdDownloadDirectory.listFiles();
-        File[] sdMusicFiles = sdMusicDirectory.listFiles();
-
         File fileList[] = new File("/storage/").listFiles();
 
         for (File file : fileList) {
@@ -305,15 +299,37 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         }
 
 
+        System.out.println("EXTERNAL_SD " + removableStoragePath);
+        String pathSdDownload = removableStoragePath + "/Download/";
+        String pathSdMusic = removableStoragePath + "/Music/";
+        File sdDownloadDirectory = new File(pathSdDownload);
+        File sdMusicDirectory = new File(pathSdMusic);
+        File[] sdDownloadFiles = sdDownloadDirectory.listFiles();
+        File[] sdMusicFiles = sdMusicDirectory.listFiles();
+
         Log.d("Files", "music Size: " + musicFiles.length);
         Log.d("Files", "download Size: " + downloadFiles.length);
 
+        if(sdDownloadFiles != null) {
+            for (int i = 0; i < sdDownloadFiles.length; i++) {
+                sdDownloadList.add(pathSdDownload + sdDownloadFiles[i].getName());
+                System.out.println("SD FILE FOUND! " + sdDownloadFiles[i].getName());
+            }
+        }else{}
+
+        if (sdMusicFiles != null) {
+            for (int i = 0; i < sdMusicFiles.length; i++) {
+                sdMusicList.add(pathSdMusic + sdMusicFiles[i].getName());
+                System.out.println("SD FILE FOUND! " + sdMusicFiles[i].getName());
+            }
+        }else{}
+
         for (int i = 0; i < downloadFiles.length; i++) {
-            Log.d("download files", "downloadFileName:" + downloadFiles[i].getName());
+            Log.d("download Files", "downloadFileName: " + downloadFiles[i].getName());
             downloadList.add(pathDownload + downloadFiles[i].getName());
         }
         for (int i = 0; i < musicFiles.length; i++) {
-            Log.d("music Files", "FileName:" + musicFiles[i].getName());
+            Log.d("music Files", "FileName: " + musicFiles[i].getName());
             musicList.add(pathMusic + musicFiles[i].getName());
         }
 
