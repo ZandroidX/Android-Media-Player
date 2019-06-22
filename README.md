@@ -1,5 +1,10 @@
 # Android Media Player
- - 20190311: patched bug ab repeat application.
+ - 20190311: patched bug ab repeat application
  - 20190514: fixed next song play cycle
+ - 20190619: Will now pull songs from sd card
+ Fixed song array counter to play the correct song order
+ Added current directory auto play
   
-  TODO: UI refresh to initiate 'glow' effect under buttons.
+  TODO: UI refresh to initiate 'glow' effect under buttons
+  Add playlist creator
+  Use a better metadata extractor; some song information will not display correctly. Most likely older ID3 form factor
