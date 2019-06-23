@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     final String no_artist = "Unknown Artist";
     final String no_album = "Unknown Album";
     final String no_title = "Untitled";
-    String removableStoragePath;
+    String removableStoragePath, filePath;
     public int start, stop, aCount, bCount, j;
     public int songOrderCounter, dirCounter, dirLastCounter;
     public boolean isUri, firstCount;
@@ -251,11 +251,12 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 if (resultCode == RESULT_OK) {
                     isUri = true;
                     audioFileUri = data.getData();
-                    System.out.println("URI " + audioFileUri);
+                    System.out.println("URI: " + audioFileUri);
+                    System.out.println("URI AUTHORITY: " + audioFileUri.getAuthority());
 
-                    String filePath = PathUtil.getPath(this, audioFileUri);
+                    filePath = PathUtil.getPath(MainActivity.this, audioFileUri);
 
-                    System.out.println("ACCENTUATED URI " + filePath);
+                    System.out.println("ACCENTUATED URI: " + filePath);
 
                     /*chosenPath = Uri.parse(audioFileUri.toString());
                     chosenPath1 = chosenPath.toString();*/
@@ -292,12 +293,10 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         File[] musicFiles = musicDirectory.listFiles();
 
         File fileList[] = new File("/storage/").listFiles();
-
         for (File file : fileList) {
             if (!file.getAbsolutePath().equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath()) && file.isDirectory() && file.canRead())
                 removableStoragePath = file.getAbsolutePath();
         }
-
 
         System.out.println("EXTERNAL_SD " + removableStoragePath);
         String pathSdDownload = removableStoragePath + "/Download/";
@@ -312,33 +311,53 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         if(sdDownloadFiles != null) {
             for (int i = 0; i < sdDownloadFiles.length; i++) {
-                sdDownloadList.add(pathSdDownload + sdDownloadFiles[i].getName());
-                System.out.println("SD FILE FOUND! " + sdDownloadFiles[i].getName());
+                if(sdDownloadFiles[i].getName().contains(".mp3")) {
+                    sdDownloadList.add(pathSdDownload + sdDownloadFiles[i].getName());
+                    System.out.println("SD FILE FOUND! " + sdDownloadFiles[i].getName());
+                }else{}
             }
         }else{}
 
         if (sdMusicFiles != null) {
             for (int i = 0; i < sdMusicFiles.length; i++) {
-                sdMusicList.add(pathSdMusic + sdMusicFiles[i].getName());
-                System.out.println("SD FILE FOUND! " + sdMusicFiles[i].getName());
+                if(sdMusicFiles[i].getName().contains(".mp3")) {
+                    sdMusicList.add(pathSdMusic + sdMusicFiles[i].getName());
+                    System.out.println("SD FILE FOUND! " + sdMusicFiles[i].getName());
+                }else{}
             }
         }else{}
 
         for (int i = 0; i < downloadFiles.length; i++) {
-            Log.d("download Files", "downloadFileName: " + downloadFiles[i].getName());
-            downloadList.add(pathDownload + downloadFiles[i].getName());
+            if(downloadFiles[i].getName().contains(".mp3")) {
+                Log.d("download Files", "downloadFileName: " + downloadFiles[i].getName());
+                downloadList.add(pathDownload + downloadFiles[i].getName());
+            }else{}
         }
         for (int i = 0; i < musicFiles.length; i++) {
-            Log.d("music Files", "FileName: " + musicFiles[i].getName());
-            musicList.add(pathMusic + musicFiles[i].getName());
+            if(musicFiles[i].getName().contains(".mp3")) {
+                Log.d("music Files", "FileName: " + musicFiles[i].getName());
+                musicList.add(pathMusic + musicFiles[i].getName());
+            }else{}
         }
 
-        if (musicList.size() == 0 && downloadList.size() != 0) {
+        musicList.addAll(downloadList);
+        musicList.addAll(sdDownloadList);
+        musicList.addAll(sdMusicList);
+
+        allMusicFiles = musicList.toArray();
+
+        /*if (musicList.size() == 0 && downloadList.size() != 0) {
             allMusicFiles = downloadList.toArray();
         }
         if (downloadList.size() == 0 && musicList.size() != 0) {
             allMusicFiles = musicList.toArray();
         }
+        if(sdMusicList.size() == 0 && sdDownloadList.size() != 0) {
+            allMusicFiles = sdDownloadList.toArray();
+        }
+        if(sdDownloadList.size() == 0 && sdMusicList.size() != 0) {
+            allMusicFiles = sdMusicList.toArray();
+        }*/
 
         System.out.println("DOWNLOAD_LIST: " + downloadList);
         System.out.println("MUSIC_LIST: " + musicList);
@@ -347,13 +366,12 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             System.out.println("ALL_MUSIC: " + allMusicFiles[i]);
         }
 
-
-        musicNow = musicList.toArray();
+        /*musicNow = musicList.toArray();
         if (musicNow != null) {
             for (int i = 0; i < musicNow.length; i++) {
                 Log.d("ARRAY_MUSIC", musicNow[i].toString());
-                System.out.println("Music Filer Length: " + musicNow.length);
             }
+            System.out.println("Music Filer Length: " + musicNow.length);
         } else {
         }
         downloadNow = downloadList.toArray();
@@ -363,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             }
         } else {
 
-        }
+        }*/
 
         startMediaPlayer();
     }
@@ -421,6 +439,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     isUri = false;
                     if (firstCount == true) {
                         firstCount = false;
+                        songOrderCounter = 0;
                     } else {
                         songOrderCounter += 1;
                     }
@@ -428,18 +447,38 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                         songOrderCounter = 0;
                     }
                     try {
-                        Log.d("PATH_WORKING", allMusicFiles[songOrderCounter].toString() + " index counter: " + songOrderCounter);
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
-                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mediaPlayer) {
-                                mediaPlayer.start();
-                                metaRetriever();
-                                trackTime();
+                        if(allMusicFiles[songOrderCounter].toString().equals(filePath)){
+                            songOrderCounter += 1;
+                            if(songOrderCounter >= allMusicFiles.length){
+                                songOrderCounter = 0;
                             }
-                        });
-                        mediaPlayer.prepareAsync();
+                            filePath = "";
+                            Log.d("PATH_WORKING", allMusicFiles[songOrderCounter].toString() + " index counter: " + songOrderCounter);
+                            mediaPlayer.reset();
+                            mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
+                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mediaPlayer) {
+                                    mediaPlayer.start();
+                                    metaRetriever();
+                                    trackTime();
+                                }
+                            });
+                            mediaPlayer.prepareAsync();
+                        }else {
+                            Log.d("PATH_WORKING", allMusicFiles[songOrderCounter].toString() + " index counter: " + songOrderCounter);
+                            mediaPlayer.reset();
+                            mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
+                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mediaPlayer) {
+                                    mediaPlayer.start();
+                                    metaRetriever();
+                                    trackTime();
+                                }
+                            });
+                            mediaPlayer.prepareAsync();
+                        }
                     } catch (Exception e) {
                         System.out.println("NEXT_SONG_FAILED: " + e.toString());
                         if (e.toString().equals("java.io.IOException: setDataSource failed.")) {
@@ -449,11 +488,18 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                         }
                         try {
                             songOrderCounter += 1;
+                            if(songOrderCounter >= allMusicFiles.length){
+                                songOrderCounter = 0;
+                            }
                             mediaPlayer.reset();
                             mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
                             System.out.println("PLAYING ANYWAYS.... " + allMusicFiles[songOrderCounter].toString());
                             mediaPlayer.prepare();
                             mediaPlayer.start();
+                            updateSongTime.run();
+                            moveSeekBarThread.run();
+                            trackTime();
+                            metaRetriever();
                         } catch (Exception f) {
                             f.printStackTrace();
                         }
