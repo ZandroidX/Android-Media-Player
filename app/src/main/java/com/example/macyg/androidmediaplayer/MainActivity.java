@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     final String no_artist = "Unknown Artist";
     final String no_album = "Unknown Album";
     final String no_title = "Untitled";
-    String removableStoragePath, filePath;
+    String removableStoragePath, filePath, chosenPath2;
     public int start, stop, aCount, bCount, j;
     public int songOrderCounter, dirCounter, dirLastCounter;
     public boolean isUri, firstCount;
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     Bitmap circBm;
     AudioManager AM;
     ArrayList<String> musicList = new ArrayList<String>();
+    ArrayList<String> currentDirList = new ArrayList<String>();
     ArrayList<String> newPath = new ArrayList<String>();
     ArrayList<String> downloadList = new ArrayList<String>();
     List<String> ListElementsArrayList;
@@ -275,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     System.out.println("# Slashes: " + lastIndexPath + " Slash index: "
                             + iterationArray[lastIndexPath - 1].toString());
 
-                    String chosenPath2 = filePath.substring(0, lastIndexSlash);
+                    chosenPath2 = filePath.substring(0, lastIndexSlash);
                     chosenPath2 = chosenPath2 + "/";
                     System.out.println("NEW_PATH " + chosenPath2);
                     metaRetriever();
@@ -289,8 +290,10 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         Log.d("Files", "Download Path: " + pathDownload);
         File downloadDirectory = new File(pathDownload);
         File musicDirectory = new File(pathMusic);
+        File currDirectory = new File(chosenPath2);
         File[] downloadFiles = downloadDirectory.listFiles();
         File[] musicFiles = musicDirectory.listFiles();
+        File[] currFiles = currDirectory.listFiles();
 
         File fileList[] = new File("/storage/").listFiles();
         for (File file : fileList) {
@@ -338,6 +341,11 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 Log.d("music Files", "FileName: " + musicFiles[i].getName());
                 musicList.add(pathMusic + musicFiles[i].getName());
             }else{}
+        }
+
+        for(int i = 0; i < currFiles.length; i++) {
+            currentDirList.add(currDirectory + currFiles[i].toString());
+            System.out.println("CURRENT DIRECTORY LIST: " + currDirectory + currFiles[i].toString());
         }
 
         musicList.addAll(downloadList);
