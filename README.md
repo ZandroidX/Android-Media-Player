@@ -2,7 +2,7 @@
  - 20190311: patched bug ab repeat application
  - 20190514: fixed next song play cycle
  - 20190619: Will now pull songs from sd card
- -20190622: Songs in selected songs folder will all be played after it is done playing
+ - 20190622: Songs in selected songs folder will all be played after it is done playing
  Fixed song array counter to play the correct song order
  Added current directory auto play
   
