@@ -443,12 +443,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 }
             }
                 trackTime();
-            }/*else {
-                Toast.makeText(this, "UNABLE TO FOCUS", Toast.LENGTH_SHORT).show();
-            }*/ catch(
-                    Exception e){
+            } catch(Exception e){
                 e.printStackTrace();
-                if(e.toString().equals("java.io.FileNotFoundException: No such file or directory")){
+                if(e.toString().contains("setDataSource failed.: status=0x80000000")){
                     Toast.makeText(this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
                 }
             }
@@ -496,6 +493,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                             });
                             mediaPlayer.prepareAsync();
                         }else {
+                            if(!currentDirectory[songOrderCounter].toString().contains(".mp3")){
+                                songOrderCounter += 1;
+                            }
                             Log.d("PATH_WORKING", currentDirectory[songOrderCounter].toString() + " index counter: " + songOrderCounter);
                             mediaPlayer.reset();
                             mediaPlayer.setDataSource(currentDirectory[songOrderCounter].toString());
@@ -516,10 +516,17 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                             seekBar.setProgress(0);
                             currTime.setText(R.string.default_time);
                         }
+                        if(e.toString().equals("setDataSource failed.: status=0x80000000")){
+                            Toast.makeText(MainActivity.this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
+                        }
+
                         try {
                             songOrderCounter += 1;
                             if(songOrderCounter >= currentDirectory.length){
                                 songOrderCounter = 0;
+                            }
+                            if(!currentDirectory[songOrderCounter].toString().contains(".mp3")){
+                                songOrderCounter += 1;
                             }
                             mediaPlayer.reset();
                             mediaPlayer.setDataSource(currentDirectory[songOrderCounter].toString());
@@ -532,6 +539,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                             metaRetriever();
                         } catch (Exception f) {
                             f.printStackTrace();
+                            if(f.toString().equals("setDataSource failed.: status=0x80000000")){
+                                Toast.makeText(MainActivity.this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                 }
