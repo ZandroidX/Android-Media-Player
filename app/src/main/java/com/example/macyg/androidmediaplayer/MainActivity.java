@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     float stopx, stopy, pausex, pausey, playx, playy;
     ArrayList<Integer> iterationCounterLocations = new ArrayList<Integer>();
     SeekBar seekBar;
-    Object musicNow[], downloadNow[], allMusicFiles[];
+    Object musicNow[], downloadNow[], allMusicFiles[], currentDirectory[];
     ImageView album_art;
     TextView album, artist, song, trackLength, currTime;
     Handler handler = new Handler();
@@ -344,8 +344,13 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         }
 
         for(int i = 0; i < currFiles.length; i++) {
-            currentDirList.add(currDirectory + currFiles[i].toString());
-            System.out.println("CURRENT DIRECTORY LIST: " + currDirectory + currFiles[i].toString());
+            currentDirList.add(currDirectory + "/" + currFiles[i].getName());
+            System.out.println("CURRENT DIRECTORY LIST: " + currDirectory + currFiles[i].getName());
+        }
+        currentDirectory = currentDirList.toArray();
+
+        for(int i = 0; i < currentDirectory.length; i++){
+            System.out.println("CURRENT_DIRECTORY ARRAY: " + currentDirectory[i]);
         }
 
         musicList.addAll(downloadList);
@@ -436,7 +441,85 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
-                if (allMusicFiles == null) {
+                if (currentDirectory == null) {
+                    seekBar.setProgress(0);
+                    currTime.setText(R.string.default_time);
+                    handler.removeCallbacks(moveSeekBarThread);
+                    songUpdateTimeHandler.removeCallbacks(updateSongTime);
+                }else{
+                    handler.removeCallbacks(moveSeekBarThread);
+                    songUpdateTimeHandler.removeCallbacks(updateSongTime);
+                    isUri = false;
+                    if(firstCount == true) {
+                        firstCount = false;
+                        songOrderCounter = 0;
+                    }else{
+                        songOrderCounter += 1;
+                    }
+                    if(songOrderCounter >= currentDirectory.length){
+                        songOrderCounter = 0;
+                    }
+                    try {
+                        if(currentDirectory[songOrderCounter].toString().equals(filePath)){
+                            songOrderCounter += 1;
+                            if(songOrderCounter >= currentDirectory.length){
+                                songOrderCounter = 0;
+                            }
+                            filePath = "";
+                            Log.d("PATH_WORKING", currentDirectory[songOrderCounter].toString() + " index counter: " + songOrderCounter);
+                            mediaPlayer.reset();
+                            mediaPlayer.setDataSource(currentDirectory[songOrderCounter].toString());
+                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mediaPlayer) {
+                                    mediaPlayer.start();
+                                    metaRetriever();
+                                    trackTime();
+                                }
+                            });
+                            mediaPlayer.prepareAsync();
+                        }else {
+                            Log.d("PATH_WORKING", currentDirectory[songOrderCounter].toString() + " index counter: " + songOrderCounter);
+                            mediaPlayer.reset();
+                            mediaPlayer.setDataSource(currentDirectory[songOrderCounter].toString());
+                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mediaPlayer) {
+                                    mediaPlayer.start();
+                                    metaRetriever();
+                                    trackTime();
+                                }
+                            });
+                            mediaPlayer.prepareAsync();
+                        }
+                    } catch (Exception e) {
+                        System.out.println("NEXT_SONG_FAILED: " + e.toString());
+                        if (e.toString().equals("java.io.IOException: setDataSource failed.")) {
+                            Toast.makeText(MainActivity.this, "Invalid File Name", Toast.LENGTH_SHORT).show();
+                            seekBar.setProgress(0);
+                            currTime.setText(R.string.default_time);
+                        }
+                        try {
+                            songOrderCounter += 1;
+                            if(songOrderCounter >= currentDirectory.length){
+                                songOrderCounter = 0;
+                            }
+                            mediaPlayer.reset();
+                            mediaPlayer.setDataSource(currentDirectory[songOrderCounter].toString());
+                            System.out.println("PLAYING ANYWAYS.... " + allMusicFiles[songOrderCounter].toString());
+                            mediaPlayer.prepare();
+                            mediaPlayer.start();
+                            updateSongTime.run();
+                            moveSeekBarThread.run();
+                            trackTime();
+                            metaRetriever();
+                        } catch (Exception f) {
+                            f.printStackTrace();
+                        }
+                    }
+                }
+                }
+                /*if (allMusicFiles == null) {
                     seekBar.setProgress(0);
                     currTime.setText(R.string.default_time);
                     handler.removeCallbacks(moveSeekBarThread);
@@ -512,8 +595,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                             f.printStackTrace();
                         }
                     }
-                }
-            }
+                }*/
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
