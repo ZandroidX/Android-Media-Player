@@ -251,6 +251,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             if (requestCode == REQUEST_OPEN_FILE) {
                 if (resultCode == RESULT_OK) {
                     isUri = true;
+                    firstCount = true;
+                    currentDirectory = null;
                     audioFileUri = data.getData();
                     System.out.println("URI: " + audioFileUri);
                     System.out.println("URI AUTHORITY: " + audioFileUri.getAuthority());
@@ -312,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         Log.d("Files", "music Size: " + musicFiles.length);
         Log.d("Files", "download Size: " + downloadFiles.length);
 
-        if(sdDownloadFiles != null) {
+        /*if(sdDownloadFiles != null) {
             for (int i = 0; i < sdDownloadFiles.length; i++) {
                 if(sdDownloadFiles[i].getName().contains(".mp3")) {
                     sdDownloadList.add(pathSdDownload + sdDownloadFiles[i].getName());
@@ -341,16 +343,18 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 Log.d("music Files", "FileName: " + musicFiles[i].getName());
                 musicList.add(pathMusic + musicFiles[i].getName());
             }else{}
-        }
+        }*/
+
+        currentDirList.clear();
 
         for(int i = 0; i < currFiles.length; i++) {
             currentDirList.add(currDirectory + "/" + currFiles[i].getName());
-            System.out.println("CURRENT DIRECTORY LIST: " + currDirectory + currFiles[i].getName());
+            System.out.println("CURRENT DIRECTORY LIST: " + currDirectory + "/" + currFiles[i].getName());
         }
         currentDirectory = currentDirList.toArray();
 
         for(int i = 0; i < currentDirectory.length; i++){
-            System.out.println("CURRENT_DIRECTORY ARRAY: " + currentDirectory[i]);
+            System.out.println("CURRENT_DIRECTORY_ARRAY: " + currentDirectory[i]);
         }
 
         musicList.addAll(downloadList);
@@ -441,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
-                if (currentDirectory == null) {
+                if (currentDirectory.length <= 1) {
                     seekBar.setProgress(0);
                     currTime.setText(R.string.default_time);
                     handler.removeCallbacks(moveSeekBarThread);
@@ -793,7 +797,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         metaRetriever = new MediaMetadataRetriever();
 
         if (isUri == false) {
-            metaRetriever.setDataSource(allMusicFiles[songOrderCounter].toString());
+            metaRetriever.setDataSource(currentDirectory[songOrderCounter].toString());
         } else {
             try {
                 metaRetriever.setDataSource(this, audioFileUri);
