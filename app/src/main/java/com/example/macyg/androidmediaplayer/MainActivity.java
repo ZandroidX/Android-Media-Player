@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     final String no_artist = "Unknown Artist";
     final String no_album = "Unknown Album";
     final String no_title = "Untitled";
-    String removableStoragePath, filePath, chosenPath2;
+    String removableStoragePath, filePath, chosenPath2, fileNotFoundException;
     public int start, stop, aCount, bCount, j;
     public int songOrderCounter, dirCounter;
     public boolean isUri, firstCount;
@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     isUri = true;
                     firstCount = true;
                     currentDirectory = null;
+                    fileNotFoundException = "";
                     audioFileUri = data.getData();
                     System.out.println("URI: " + audioFileUri);
                     System.out.println("URI AUTHORITY: " + audioFileUri.getAuthority());
@@ -284,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             }
         }
 
-        //Now get all filepaths where music can be stored so they are readily accessible by the mediaplayer.
+        //Now get all file paths where music is stored so they are readily accessible by the mediaplayer.
 
         String pathDownload = Environment.getExternalStorageDirectory().toString() + "/Download/";
         String pathMusic = Environment.getExternalStorageDirectory().toString() + "/Music/";
@@ -348,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         //if the current directory list is still full from last chosen song directory, clear it.
         currentDirList.clear();
 
-        for(int i = 0; i < currFiles.length; i++) {
+        for (int i = 0; i < currFiles.length; i++) {
             currentDirList.add(currDirectory + "/" + currFiles[i].getName());
             System.out.println("CURRENT DIRECTORY LIST: " + currDirectory + "/" + currFiles[i].getName());
         }
@@ -357,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         currentDirectory = currentDirList.toArray();
         Arrays.sort(currentDirectory);
 
-        for(int i = 0; i < currentDirectory.length; i++){
+        for (int i = 0; i < currentDirectory.length; i++) {
             System.out.println("CURRENT_DIRECTORY_ARRAY: " + currentDirectory[i]);
         }
 
@@ -425,6 +426,9 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                         seekBar.setProgress(0);
                         seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
                         seekBar.setVisibility(View.VISIBLE);
+                        artist.setVisibility(View.VISIBLE);
+                        song.setVisibility(View.VISIBLE);
+                        album.setVisibility(View.VISIBLE);
                         songOrderCounter += 1;
                         System.out.println("Song order Counter: " + songOrderCounter);
                         firstCount = true;
@@ -436,19 +440,33 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                         seekBar.setMax(mediaPlayer.getDuration()); // Set the Maximum range of the
                         seekBar.getVisibility();
                         seekBar.setVisibility(View.VISIBLE);
+                        artist.setVisibility(View.VISIBLE);
+                        song.setVisibility(View.VISIBLE);
+                        album.setVisibility(View.VISIBLE);
                         songOrderCounter += 1;
                         System.out.println("Song order Counter: " + songOrderCounter);
                         firstCount = true;
                     }
                 }
             }
-                trackTime();
-            } catch(Exception e){
-                e.printStackTrace();
-                if(e.toString().contains("setDataSource failed.: status=0x80000000")){
-                    Toast.makeText(this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
-                }
+            trackTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.toString().contains("setDataSource failed.: status=0x80000000")) {
+                fileNotFoundException = e.toString();
+                Toast.makeText(this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
+                handler.removeCallbacks(moveSeekBarThread);
+                songUpdateTimeHandler.removeCallbacks(updateSongTime);
+                seekBar.setVisibility(View.INVISIBLE);
+                trackLength.setVisibility(View.INVISIBLE);
+                currTime.setVisibility(View.INVISIBLE);
+                album.setVisibility(View.INVISIBLE);
+                artist.setVisibility(View.INVISIBLE);
+                song.setVisibility(View.INVISIBLE);
+                album_art.setVisibility(View.INVISIBLE);
+                mediaPlayer.reset();
             }
+        }
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
@@ -457,27 +475,27 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     currTime.setText(R.string.default_time);
                     handler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
-                }else{
+                } else {
                     handler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
                     isUri = false;
-                    if(firstCount == true) {
+                    if (firstCount == true) {
                         firstCount = false;
                         songOrderCounter = 0;
-                    }else{
+                    } else {
                         songOrderCounter += 1;
                     }
-                    if(songOrderCounter >= currentDirectory.length){
+                    if (songOrderCounter >= currentDirectory.length) {
                         songOrderCounter = 0;
                     }
                     try {
-                        if(currentDirectory[songOrderCounter].toString().equals(filePath)){
+                        if (currentDirectory[songOrderCounter].toString().equals(filePath)) {
                             songOrderCounter += 1;
-                            if(songOrderCounter >= currentDirectory.length){
+                            if (songOrderCounter >= currentDirectory.length) {
                                 songOrderCounter = 0;
                             }
                             filePath = "";
-                            if(!currentDirectory[songOrderCounter].toString().contains(".mp3")){
+                            if (!currentDirectory[songOrderCounter].toString().contains(".mp3")) {
                                 songOrderCounter += 1;
                             }
                             Log.d("PATH_WORKING", currentDirectory[songOrderCounter].toString() + " index counter: " + songOrderCounter);
@@ -492,8 +510,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                                 }
                             });
                             mediaPlayer.prepareAsync();
-                        }else {
-                            if(!currentDirectory[songOrderCounter].toString().contains(".mp3")){
+                        } else {
+                            if (!currentDirectory[songOrderCounter].toString().contains(".mp3")) {
                                 songOrderCounter += 1;
                             }
                             Log.d("PATH_WORKING", currentDirectory[songOrderCounter].toString() + " index counter: " + songOrderCounter);
@@ -516,16 +534,20 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                             seekBar.setProgress(0);
                             currTime.setText(R.string.default_time);
                         }
-                        if(e.toString().equals("setDataSource failed.: status=0x80000000")){
+                        if (e.toString().equals("setDataSource failed.: status=0x80000000")) {
                             Toast.makeText(MainActivity.this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
+                            mediaPlayer.reset();
+                            album.setVisibility(View.INVISIBLE);
+                            artist.setVisibility(View.INVISIBLE);
+                            song.setVisibility(View.INVISIBLE);
                         }
 
                         try {
                             songOrderCounter += 1;
-                            if(songOrderCounter >= currentDirectory.length){
+                            if (songOrderCounter >= currentDirectory.length) {
                                 songOrderCounter = 0;
                             }
-                            if(!currentDirectory[songOrderCounter].toString().contains(".mp3")){
+                            if (!currentDirectory[songOrderCounter].toString().contains(".mp3")) {
                                 songOrderCounter += 1;
                             }
                             mediaPlayer.reset();
@@ -539,13 +561,14 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                             metaRetriever();
                         } catch (Exception f) {
                             f.printStackTrace();
-                            if(f.toString().equals("setDataSource failed.: status=0x80000000")){
+                            if (f.toString().equals("setDataSource failed.: status=0x80000000")) {
                                 Toast.makeText(MainActivity.this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
+                                mediaPlayer.reset();
                             }
                         }
                     }
                 }
-                }
+            }
                 /*if (allMusicFiles == null) {
                     seekBar.setProgress(0);
                     currTime.setText(R.string.default_time);
@@ -681,23 +704,27 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     }
 
     public void play() {
-        int result = AM.requestAudioFocus(this,
-                // Use the music stream.
-                AudioManager.STREAM_MUSIC,
-                // Request permanent focus.
-                AudioManager.AUDIOFOCUS_GAIN);
+        if (fileNotFoundException.contains("setDataSource failed.: status=0x80000000")) {
 
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            /*AM.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0);*/
-            /*Toast.makeText(this, "Focus Granted", Toast.LENGTH_SHORT).show();*/
-            if (!mediaPlayer.isPlaying() || mediaPlayer == null) {
-                mediaPlayer.start();
-                /*handler.removeCallbacks(moveSeekBarThread);*/
-                handler.postDelayed(moveSeekBarThread, 100);
-                songUpdateTimeHandler.postDelayed(updateSongTime, 100);
+        } else {
+            int result = AM.requestAudioFocus(this,
+                    // Use the music stream.
+                    AudioManager.STREAM_MUSIC,
+                    // Request permanent focus.
+                    AudioManager.AUDIOFOCUS_GAIN);
+
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                /*AM.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0);*/
+                /*Toast.makeText(this, "Focus Granted", Toast.LENGTH_SHORT).show();*/
+                if (!mediaPlayer.isPlaying() || mediaPlayer == null) {
+                    mediaPlayer.start();
+                    handler.postDelayed(moveSeekBarThread, 100);
+                    songUpdateTimeHandler.postDelayed(updateSongTime, 100);
+                }
             }
         }
     }
+
 
     public void pause() {
         if (mediaPlayer.isPlaying()) {
@@ -708,10 +735,10 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
     public void stop() {
         if (mediaPlayer != null || mediaPlayer.isPlaying() || mediaPlayer == null) {
+            mediaPlayer.pause();
             seekBar.setProgress(0);
             mediaPlayer.seekTo(0);
             updateSongTime.run();
-            mediaPlayer.pause();
             start = 0;
             stop = 0;
             aCount = 0;
