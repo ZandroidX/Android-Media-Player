@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
     Object musicNow[], downloadNow[], allMusicFiles[], currentDirectory[];
     ImageView album_art;
     TextView album, artist, song, trackLength, currTime;
-    Handler handler = new Handler();
+    Handler seekBarHandler = new Handler();
     Handler songUpdateTimeHandler = new Handler();
     Handler abLoopHandler = new Handler();
     MediaMetadataRetriever metaRetriever;
@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
             if (e.toString().contains("setDataSource failed.: status=0x80000000")) {
                 fileNotFoundException = e.toString();
                 Toast.makeText(this, "FILE DOES NOT EXIST!", Toast.LENGTH_LONG).show();
-                handler.removeCallbacks(moveSeekBarThread);
+                seekBarHandler.removeCallbacks(moveSeekBarThread);
                 songUpdateTimeHandler.removeCallbacks(updateSongTime);
                 seekBar.setVisibility(View.INVISIBLE);
                 trackLength.setVisibility(View.INVISIBLE);
@@ -473,13 +473,13 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 if (currentDirectory.length <= 1) {
                     seekBar.setProgress(0);
                     currTime.setText(R.string.default_time);
-                    handler.removeCallbacks(moveSeekBarThread);
+                    seekBarHandler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
                 } else {
-                    handler.removeCallbacks(moveSeekBarThread);
+                    seekBarHandler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
                     isUri = false;
-                    if (firstCount == true) {
+                    if (firstCount) {
                         firstCount = false;
                         songOrderCounter = 0;
                     } else {
@@ -674,8 +674,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         final int mediaMax = mediaPlayer.getDuration();
         seekBar.setMax(mediaMax);
         seekBar.setProgress(mediaPos);
-        handler.removeCallbacks(moveSeekBarThread);
-        handler.postDelayed(moveSeekBarThread, 100);
+        seekBarHandler.removeCallbacks(moveSeekBarThread);
+        seekBarHandler.postDelayed(moveSeekBarThread, 100);
 
         int milliSongMax = mediaMax / 1000;
         double minutesDouble = Math.floor(milliSongMax / 60);
@@ -718,7 +718,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 /*Toast.makeText(this, "Focus Granted", Toast.LENGTH_SHORT).show();*/
                 if (!mediaPlayer.isPlaying() || mediaPlayer == null) {
                     mediaPlayer.start();
-                    handler.postDelayed(moveSeekBarThread, 100);
+                    seekBarHandler.postDelayed(moveSeekBarThread, 100);
                     songUpdateTimeHandler.postDelayed(updateSongTime, 100);
                 }
             }
@@ -809,7 +809,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 int mediaMax_new = mediaPlayer.getDuration();
                 seekBar.setMax(mediaMax_new);
                 seekBar.setProgress(mediaPos_new);
-                handler.postDelayed(this, 100); //Looping the thread after 0.3 second
+                seekBarHandler.postDelayed(this, 100); //Looping the thread after 0.3 second
                 // seconds
             } else {
             }
