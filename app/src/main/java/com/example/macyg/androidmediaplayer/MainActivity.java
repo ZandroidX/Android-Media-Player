@@ -289,7 +289,6 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         String pathDownload = Environment.getExternalStorageDirectory().toString() + "/Download/";
         String pathMusic = Environment.getExternalStorageDirectory().toString() + "/Music/";
-        String dir = getFilesDir().getAbsolutePath();
         Log.d("Files", "Download Path: " + pathDownload);
         File downloadDirectory = new File(pathDownload);
         File musicDirectory = new File(pathMusic);
@@ -315,37 +314,6 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
         Log.d("Files", "music Size: " + musicFiles.length);
         Log.d("Files", "download Size: " + downloadFiles.length);
 
-        /*if(sdDownloadFiles != null) {
-            for (int i = 0; i < sdDownloadFiles.length; i++) {
-                if(sdDownloadFiles[i].getName().contains(".mp3")) {
-                    sdDownloadList.add(pathSdDownload + sdDownloadFiles[i].getName());
-                    System.out.println("SD FILE FOUND! " + sdDownloadFiles[i].getName());
-                }else{}
-            }
-        }else{}
-
-        if (sdMusicFiles != null) {
-            for (int i = 0; i < sdMusicFiles.length; i++) {
-                if(sdMusicFiles[i].getName().contains(".mp3")) {
-                    sdMusicList.add(pathSdMusic + sdMusicFiles[i].getName());
-                    System.out.println("SD FILE FOUND! " + sdMusicFiles[i].getName());
-                }else{}
-            }
-        }else{}
-
-        for (int i = 0; i < downloadFiles.length; i++) {
-            if(downloadFiles[i].getName().contains(".mp3")) {
-                Log.d("download Files", "downloadFileName: " + downloadFiles[i].getName());
-                downloadList.add(pathDownload + downloadFiles[i].getName());
-            }else{}
-        }
-        for (int i = 0; i < musicFiles.length; i++) {
-            if(musicFiles[i].getName().contains(".mp3")) {
-                Log.d("music Files", "FileName: " + musicFiles[i].getName());
-                musicList.add(pathMusic + musicFiles[i].getName());
-            }else{}
-        }*/
-
         //if the current directory list is still full from last chosen song directory, clear it.
         currentDirList.clear();
 
@@ -368,42 +336,12 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         allMusicFiles = musicList.toArray();
 
-        /*if (musicList.size() == 0 && downloadList.size() != 0) {
-            allMusicFiles = downloadList.toArray();
-        }
-        if (downloadList.size() == 0 && musicList.size() != 0) {
-            allMusicFiles = musicList.toArray();
-        }
-        if(sdMusicList.size() == 0 && sdDownloadList.size() != 0) {
-            allMusicFiles = sdDownloadList.toArray();
-        }
-        if(sdDownloadList.size() == 0 && sdMusicList.size() != 0) {
-            allMusicFiles = sdMusicList.toArray();
-        }*/
-
         System.out.println("DOWNLOAD_LIST: " + downloadList);
         System.out.println("MUSIC_LIST: " + musicList);
 
         for (int i = 0; i < allMusicFiles.length; i++) {
             System.out.println("ALL_MUSIC: " + allMusicFiles[i]);
         }
-
-        /*musicNow = musicList.toArray();
-        if (musicNow != null) {
-            for (int i = 0; i < musicNow.length; i++) {
-                Log.d("ARRAY_MUSIC", musicNow[i].toString());
-            }
-            System.out.println("Music Filer Length: " + musicNow.length);
-        } else {
-        }
-        downloadNow = downloadList.toArray();
-        if (downloadNow != null) {
-            for (int i = 0; i < downloadNow.length; i++) {
-                Log.d("ARRAY_DOWNLOAD", downloadNow[i].toString());
-            }
-        } else {
-
-        }*/
 
         startMediaPlayer();
     }
@@ -575,83 +513,6 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     }
                 }
             }
-                /*if (allMusicFiles == null) {
-                    seekBar.setProgress(0);
-                    currTime.setText(R.string.default_time);
-                    handler.removeCallbacks(moveSeekBarThread);
-                    songUpdateTimeHandler.removeCallbacks(updateSongTime);
-                } else {
-                    handler.removeCallbacks(moveSeekBarThread);
-                    songUpdateTimeHandler.removeCallbacks(updateSongTime);
-                    isUri = false;
-                    if (firstCount == true) {
-                        firstCount = false;
-                        songOrderCounter = 0;
-                    } else {
-                        songOrderCounter += 1;
-                    }
-                    if (songOrderCounter >= allMusicFiles.length) {
-                        songOrderCounter = 0;
-                    }
-                    try {
-                        if(allMusicFiles[songOrderCounter].toString().equals(filePath)){
-                            songOrderCounter += 1;
-                            if(songOrderCounter >= allMusicFiles.length){
-                                songOrderCounter = 0;
-                            }
-                            filePath = "";
-                            Log.d("PATH_WORKING", allMusicFiles[songOrderCounter].toString() + " index counter: " + songOrderCounter);
-                            mediaPlayer.reset();
-                            mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
-                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mediaPlayer) {
-                                    mediaPlayer.start();
-                                    metaRetriever();
-                                    trackTime();
-                                }
-                            });
-                            mediaPlayer.prepareAsync();
-                        }else {
-                            Log.d("PATH_WORKING", allMusicFiles[songOrderCounter].toString() + " index counter: " + songOrderCounter);
-                            mediaPlayer.reset();
-                            mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
-                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mediaPlayer) {
-                                    mediaPlayer.start();
-                                    metaRetriever();
-                                    trackTime();
-                                }
-                            });
-                            mediaPlayer.prepareAsync();
-                        }
-                    } catch (Exception e) {
-                        System.out.println("NEXT_SONG_FAILED: " + e.toString());
-                        if (e.toString().equals("java.io.IOException: setDataSource failed.")) {
-                            Toast.makeText(MainActivity.this, "Invalid File Name", Toast.LENGTH_SHORT).show();
-                            seekBar.setProgress(0);
-                            currTime.setText(R.string.default_time);
-                        }
-                        try {
-                            songOrderCounter += 1;
-                            if(songOrderCounter >= allMusicFiles.length){
-                                songOrderCounter = 0;
-                            }
-                            mediaPlayer.reset();
-                            mediaPlayer.setDataSource(allMusicFiles[songOrderCounter].toString());
-                            System.out.println("PLAYING ANYWAYS.... " + allMusicFiles[songOrderCounter].toString());
-                            mediaPlayer.prepare();
-                            mediaPlayer.start();
-                            updateSongTime.run();
-                            moveSeekBarThread.run();
-                            trackTime();
-                            metaRetriever();
-                        } catch (Exception f) {
-                            f.printStackTrace();
-                        }
-                    }
-                }*/
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
