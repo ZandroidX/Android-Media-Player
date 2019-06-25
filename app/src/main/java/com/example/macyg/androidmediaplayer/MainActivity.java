@@ -470,6 +470,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
+
                 if (currentDirectory.length <= 1) {
                     seekBar.setProgress(0);
                     currTime.setText(R.string.default_time);
@@ -487,6 +488,11 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     }
                     if (songOrderCounter >= currentDirectory.length) {
                         songOrderCounter = 0;
+                    }
+                    for(int i = 0; i < currentDirectory.length; i++){
+                        if(filePath.equals(currentDirectory[i].toString())){
+                            songOrderCounter = i;
+                        }
                     }
                     try {
                         if (currentDirectory[songOrderCounter].toString().equals(filePath)) {
