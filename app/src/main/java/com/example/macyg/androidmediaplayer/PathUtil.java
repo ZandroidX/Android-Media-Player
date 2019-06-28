@@ -35,8 +35,11 @@ public class PathUtil extends MainActivity {
                 final String[] split = docId.split(":");
                 File fileList[] = new File("/storage/").listFiles();
                 for (File file : fileList) {
-                    if (!file.getAbsolutePath().equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath()) && file.isDirectory() && file.canRead())
+                    if (!file.getAbsolutePath().equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath()) && file.isDirectory() && file.canRead()) {
                         removableStoragePath = file.getAbsolutePath();
+                    }else{
+                        removableStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                    }
                 }
                 return removableStoragePath + "/" + split[1];
             } else if (isDownloadsDocument(uri)) {
