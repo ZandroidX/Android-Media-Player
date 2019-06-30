@@ -11,6 +11,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by Aki on 1/7/2017.
@@ -21,6 +22,10 @@ public class PathUtil extends MainActivity {
      * Gets the file path of the given Uri.
      */
     public static String removableStoragePath;
+    public static String sdPath, sdCardLabel;
+    public static boolean sdCardPathDetection;
+    public static int dirCounterSD;
+    public static ArrayList<Integer> iterationCounterLocationsSD = new ArrayList<Integer>();
 
     @SuppressLint("NewApi")
     public static String getPath(Context context, Uri uri) {
@@ -33,16 +38,19 @@ public class PathUtil extends MainActivity {
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
+                final String type = split[0];
                 File fileList[] = new File("/storage/").listFiles();
                 for (File file : fileList) {
-                    if (!file.getAbsolutePath().equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath()) && file.isDirectory() && file.canRead()) {
-                        removableStoragePath = file.getAbsolutePath();
-                    }else{
-                        removableStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                    if(!file.toString().contains("self") && !file.toString().contains("emulated")){
+                        sdPath = file.toString();
+                        System.out.println("SD PATH SUCCESSFULLY IDENTIFIED!: " + sdPath);
                     }
+                    sdCheck(uri);
                 }
+                System.out.println(removableStoragePath);
                 return removableStoragePath + "/" + split[1];
-            } else if (isDownloadsDocument(uri)) {
+
+            } /*else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
                 uri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
@@ -59,7 +67,7 @@ public class PathUtil extends MainActivity {
                 }
                 selection = "_id=?";
                 selectionArgs = new String[]{ split[1] };
-            }
+            }*/
         }
         if ("content".equalsIgnoreCase(uri.getScheme())) {
             String[] projection = { MediaStore.Images.Media.DATA };
@@ -78,6 +86,31 @@ public class PathUtil extends MainActivity {
         return null;
     }
 
+    public static void sdCheck(Uri uri){
+        for (int i = 0; i < uri.toString().length(); i++) {
+            char c = uri.toString().charAt(i);
+            //Process char
+            if (c == '/') {
+                dirCounterSD += 1;
+                iterationCounterLocationsSD.add(i);
+            }
+        }
+        Object iterationArraySD[] = iterationCounterLocationsSD.toArray();
+        int lastIndexPathSD = iterationArraySD.length;
+        int lastIndexSlashSD = (int) iterationArraySD[lastIndexPathSD - 1];
+        System.out.println("# Slashes: " + lastIndexPathSD + " Slash index: "
+                + iterationArraySD[lastIndexPathSD - 1].toString());
+
+        sdCardLabel = uri.toString().substring(lastIndexSlashSD + 1, lastIndexSlashSD + 10);
+        if(sdCardLabel.toCharArray()[4] == "-".toCharArray()[0]){
+            sdCardPathDetection = true;
+            removableStoragePath = sdPath;
+        }else{
+            removableStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        }
+        System.out.println("SD Card Label: " + sdCardLabel);
+
+    }
 
     /**
      * @param uri The Uri to check.
