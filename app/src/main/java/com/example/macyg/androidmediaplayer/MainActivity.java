@@ -466,6 +466,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     seekBar.setProgress(0);
                     currTime.setText(R.string.default_time);
                     playButton.setBackground(getResources().getDrawable(R.drawable.ic_media_embed_play, getTheme()));
+                    playIcon = true;
                     seekBarHandler.removeCallbacks(moveSeekBarThread);
                     songUpdateTimeHandler.removeCallbacks(updateSongTime);
                 } else {

@@ -11,10 +11,11 @@ public class CustomView extends View {
     Paint paint = new Paint();
     int viewWidth;
     int viewHeight;
+    int radius = 100;
 
     //First get custom views dimensions
     @Override
-    protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld){
+    protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
 
         viewWidth = xNew;
@@ -26,10 +27,10 @@ public class CustomView extends View {
     }
 
     @Override
-    protected void onDraw(final Canvas canvas){
+    protected void onDraw(final Canvas canvas) {
         paint.setColor(getResources().getColor(R.color.colorAccent));
         paint.setAntiAlias(true);
-        canvas.drawCircle(viewWidth/2-10, viewHeight/2+5, 100, paint);
+        canvas.drawCircle(viewWidth / 2 - 10, viewHeight / 2 + 5, radius, paint);
     }
 
     public CustomView(Context context, AttributeSet attrs) {
@@ -43,4 +44,5 @@ public class CustomView extends View {
     public CustomView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
+
 }
