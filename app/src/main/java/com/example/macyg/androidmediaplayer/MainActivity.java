@@ -131,14 +131,18 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 int requestAudioFocus = (AM.requestAudioFocus(MainActivity.this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN));
                 System.out.println("Play Audio Focus: " + requestAudioFocus);
                 if(requestAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                    if (playIcon && !mediaPlayer.isPlaying()) {
-                        playButton.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_media_pause));
-                        play();
-                        playIcon = false;
-                    } else {
-                        mediaPlayer.pause();
-                        playButton.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_media_embed_play));
-                        playIcon = true;
+                    if(audioFileUri == null){
+
+                    }else {
+                        if (playIcon && !mediaPlayer.isPlaying()) {
+                            playButton.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_media_pause));
+                            play();
+                            playIcon = false;
+                        } else {
+                            mediaPlayer.pause();
+                            playButton.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_media_embed_play));
+                            playIcon = true;
+                        }
                     }
                 }else{System.out.println("FOCUS NOT GRANTED BY PLAY");}
             }
@@ -355,7 +359,11 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         if (currFiles != null) {
             for (int i = 0; i < currFiles.length; i++) {
-                if(currFiles[i].getName().contains(".mp3")) {
+                if(currFiles[i].getName().contains(".mp3") || currFiles[i].getName().contains(".m4a")
+                        || currFiles[i].getName().contains(".aac") || currFiles[i].getName().contains(".mkv")
+                        || currFiles[i].getName().contains(".wav") || currFiles[i].getName().contains(".mp3")
+                        || currFiles[i].getName().contains(".3gp") || currFiles[i].getName().contains(".flac")
+                        || currFiles[i].getName().contains(".ogg")) {
                     currentDirList.add(currDirectory + "/" + currFiles[i].getName());
                     System.out.println("CURRENT DIRECTORY LIST: " + currDirectory + "/" + currFiles[i].getName());
 

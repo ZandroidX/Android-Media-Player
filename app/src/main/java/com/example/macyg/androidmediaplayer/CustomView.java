@@ -1,6 +1,7 @@
 package com.example.macyg.androidmediaplayer;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -18,6 +19,7 @@ public class CustomView extends View {
     protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
 
+
         viewWidth = xNew;
         viewHeight = yNew;
     }
@@ -30,7 +32,7 @@ public class CustomView extends View {
     protected void onDraw(final Canvas canvas) {
         paint.setColor(getResources().getColor(R.color.colorAccent));
         paint.setAntiAlias(true);
-        canvas.drawCircle(viewWidth / 2 - 10, viewHeight / 2 + 5, radius, paint);
+        canvas.drawCircle(viewWidth / 2, viewHeight / 2 + 10, radius, paint);
     }
 
     public CustomView(Context context, AttributeSet attrs) {
