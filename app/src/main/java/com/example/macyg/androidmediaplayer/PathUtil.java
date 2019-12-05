@@ -30,6 +30,7 @@ public class PathUtil extends MainActivity {
     public static String getPath(Context context, Uri uri) {
         final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
         String selection = null;
+        System.out.println("URI SCHEME: " + uri.getScheme() + "getDocumentId: " + DocumentsContract.getDocumentId(uri));
         String[] selectionArgs = null;
         // Uri is different in versions after KITKAT (Android 4.4), we need to
         // deal with different Uris.
@@ -40,7 +41,7 @@ public class PathUtil extends MainActivity {
                 final String type = split[0];
                 File fileList[] = new File("/storage/").listFiles();
                 for (File file : fileList) {
-                    if(!file.toString().contains("self") && !file.toString().contains("emulated")){
+                    if (!file.toString().contains("self") && !file.toString().contains("emulated")) {
                         sdPath = file.toString();
                         System.out.println("SD PATH SUCCESSFULLY IDENTIFIED!: " + sdPath);
                     }
@@ -49,27 +50,27 @@ public class PathUtil extends MainActivity {
                 System.out.println(removableStoragePath);
                 return removableStoragePath + "/" + split[1];
 
-            } /*else if (isDownloadsDocument(uri)) {
-                final String id = DocumentsContract.getDocumentId(uri);
-                uri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            } else if (isMediaDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-                if ("image".equals(type)) {
-                    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            } else {
+                if (isMediaDocument(uri)) {
+                    String pathUtil = uri.getPath();
+                    System.out.println("Media document: " + pathUtil);
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    File fileList[] = new File("/storage/").listFiles();
+                    for (File file : fileList) {
+                        if (file.toString().contains("self") || file.toString().contains("emulated")) {
+                            sdPath = file.toString();
+                            System.out.println("SD PATH SUCCESSFULLY IDENTIFIED!: " + sdPath);
+                        }
+                        sdCheck(uri);
+                    }
+                    System.out.println(removableStoragePath);
+                    return removableStoragePath + "/" + split[1];
                 }
-                selection = "_id=?";
-                selectionArgs = new String[]{ split[1] };
-            }*/
+            }
         }
         if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = { MediaStore.Images.Media.DATA };
+            String[] projection = {MediaStore.Images.Media.DATA};
             Cursor cursor = null;
             try {
                 cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
@@ -85,7 +86,8 @@ public class PathUtil extends MainActivity {
         return null;
     }
 
-    public static void sdCheck(Uri uri){
+    public static void sdCheck(Uri uri) {
+        System.out.println("SD CHECK IS WORKING!");
         for (int i = 0; i < uri.toString().length(); i++) {
             char c = uri.toString().charAt(i);
             //Process char
@@ -101,10 +103,10 @@ public class PathUtil extends MainActivity {
                 + iterationArraySD[lastIndexPathSD - 1].toString());
 
         sdCardLabel = uri.toString().substring(lastIndexSlashSD + 1, lastIndexSlashSD + 10);
-        if(sdCardLabel.toCharArray()[4] == "-".toCharArray()[0]){
+        if (sdCardLabel.toCharArray()[4] == "-".toCharArray()[0]) {
             sdCardPathDetection = true;
             removableStoragePath = sdPath;
-        }else{
+        } else {
             removableStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         }
         System.out.println("SD Card Label: " + sdCardLabel);

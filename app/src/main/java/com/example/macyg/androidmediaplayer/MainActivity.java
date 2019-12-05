@@ -275,32 +275,6 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     System.out.println("URI: " + audioFileUri);
                     System.out.println("URI AUTHORITY: " + audioFileUri.getAuthority());
 
-                    //-----------------------------------------------------------
-                    /*for (int i = 0; i < audioFileUri.toString().length(); i++) {
-                        char c = audioFileUri.toString().charAt(i);
-                        //Process char
-                        if (c == '/') {
-                            dirCounterSD += 1;
-                            iterationCounterLocationsSD.add(i);
-                        }
-                    }
-                    Object iterationArraySD[] = iterationCounterLocationsSD.toArray();
-                    int lastIndexPathSD = iterationArraySD.length;
-                    int lastIndexSlashSD = (int) iterationArraySD[lastIndexPathSD - 1];
-                    System.out.println("# Slashes: " + lastIndexPathSD + " Slash index: "
-                            + iterationArraySD[lastIndexPathSD - 1].toString());
-
-                    sdCardLabel = audioFileUri.toString().substring(lastIndexSlashSD + 1, lastIndexSlashSD + 10);
-                    if(sdCardLabel.toCharArray()[lastIndexSlashSD] == "-".toCharArray()[1]){
-                        sdCardPathDetection = true;
-                    }
-                    System.out.println("SD Card Label: " + sdCardLabel);
-
-                    filePath = PathUtil.getPath(this, audioFileUri);
-
-                    System.out.println("ACCENTUATED URI: " + filePath);*/
-
-                    //--------------------------------------------------------------
                     filePath = PathUtil.getPath(this, audioFileUri);
                     for (int i = 0; i < filePath.length(); i++) {
                         char c = filePath.charAt(i);
@@ -339,7 +313,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
 
         File fileList[] = new File("/storage/").listFiles();
         for (File file : fileList) {
-            if (!file.getAbsolutePath().equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath()) && file.isDirectory() && file.canRead())
+            if (!file.getAbsolutePath().equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath())
+                    && file.isDirectory() && file.canRead())
                 removableStoragePath = file.getAbsolutePath() + "/";
         }
 
@@ -718,7 +693,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                         seekBarHandler.removeCallbacks(moveSeekBarThread);
                         mediaPlayer.reset();
                         songOrderCounter -= 1;
-                        if (songOrderCounter <= currentDirectory.length) {
+                        if (songOrderCounter >= currentDirectory.length) {
                             songOrderCounter = 0;
                         }
                         System.out.println("Reverse counter: " + songOrderCounter);
