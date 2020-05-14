@@ -653,6 +653,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     /*if(!currentDirectory[songOrderCounter].toString().contains("*.mp3")){
                         songOrderCounter += 1;
                     }*/
+                    System.out.println("Current Direcotry Length: " + currentDirectory.length);
                     System.out.println("Forward counter: " + songOrderCounter);
                     mediaPlayer.setDataSource(currentDirectory[songOrderCounter].toString());
                     mediaPlayer.prepare();
@@ -669,6 +670,7 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 stop = 0;
                 aCount = 0;
                 bCount = 0;
+                trackTime();
                 /*AM.abandonAudioFocus(this);*/
             }
         }
@@ -693,18 +695,19 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                         seekBarHandler.removeCallbacks(moveSeekBarThread);
                         mediaPlayer.reset();
                         songOrderCounter -= 1;
-                        if (songOrderCounter >= currentDirectory.length) {
+                        if (songOrderCounter >= currentDirectory.length - 1) {
                             songOrderCounter = 0;
                         }
                         System.out.println("Reverse counter: " + songOrderCounter);
                         if (songOrderCounter < 0) {
-                            songOrderCounter = currentDirectory.length;
+                            songOrderCounter = currentDirectory.length - 1;
                         }
                         mediaPlayer.setDataSource(currentDirectory[songOrderCounter].toString());
                         System.out.println("Reverse counter: " + songOrderCounter);
                         mediaPlayer.prepare();
                         mediaPlayer.start();
                         updateSongTime.run();
+                        trackTime();
                         moveSeekBarThread.run();
                         metaRetriever();
                     } catch (Exception e) {
