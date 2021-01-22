@@ -50,30 +50,10 @@
         android:background="@android:drawable/ic_media_play" />
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/forward"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_above="@id/seekbar"
-        android:layout_gravity="end"
-        android:layout_toEndOf="@id/play"
-        android:background="@android:drawable/ic_media_next" />
-
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/backward"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_above="@id/seekbar"
-        android:layout_toStartOf="@id/play"
-        android:background="@android:drawable/ic_media_previous"
-        android:shadowColor="@color/white"
-        android:shadowRadius="50" />
-
-    <android.support.v7.widget.AppCompatButton
         android:id="@+id/aButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_above="@+id/seekbar"
-        android:layout_alignStart="@id/backward"
         android:layout_alignParentStart="true"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginRight="5dp"
