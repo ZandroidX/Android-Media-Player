@@ -350,23 +350,23 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                 isUri = false;
 
                 try {
-                    mediaPlayer.reset();
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    mediaPlayer.pause();
+                    mediaPlayer.seekTo(0);
+                    metaRetriever();
+                    trackTime();
+                    /*mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mediaPlayer) {
-                            mediaPlayer.pause();
+                            //mediaPlayer.release();
                             mediaPlayer.seekTo(0);
-                            mediaPlayer.start();
                             metaRetriever();
                             trackTime();
-                        }
-                    });
+                        }*/
                     mediaPlayer.prepareAsync();
                 } catch (Exception e) {
                     System.out.println("Exception: " + e);
                 }
             }
-
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
