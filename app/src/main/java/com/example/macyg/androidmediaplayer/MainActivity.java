@@ -354,6 +354,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager.OnAu
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mediaPlayer) {
+                            mediaPlayer.pause();
+                            mediaPlayer.seekTo(0);
                             mediaPlayer.start();
                             metaRetriever();
                             trackTime();
